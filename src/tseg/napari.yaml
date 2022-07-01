@@ -1,0 +1,41 @@
+name: tseg
+display_name: tseg
+contributions:
+  commands:
+    - id: tseg.get_reader
+      python_name: tseg._reader:napari_get_reader
+      title: Open data with tseg
+    - id: tseg.write_multiple
+      python_name: tseg._writer:write_multiple
+      title: Save multi-layer data with tseg
+    - id: tseg.write_single_image
+      python_name: tseg._writer:write_single_image
+      title: Save image data with tseg
+    - id: tseg.make_qwidget
+      python_name: tseg._widget:ExampleQWidget
+      title: Make example QWidget
+    - id: tseg.make_magic_widget
+      python_name: tseg._widget:example_magic_widget
+      title: Make example magic widget
+    - id: tseg.make_func_widget
+      python_name: tseg._widget:example_function_widget
+      title: Make example function widget
+  readers:
+    - command: tseg.get_reader
+      accepts_directories: false
+      filename_patterns: ['*.npy']
+  writers:
+    - command: tseg.write_multiple
+      layer_types: ['image*','labels*']
+      filename_extensions: []
+    - command: tseg.write_single_image
+      layer_types: ['image']
+      filename_extensions: ['.npy']
+  widgets:
+    - command: tseg.make_qwidget
+      display_name: Example QWidget
+    - command: tseg.make_magic_widget
+      display_name: Example Magic Widget
+    - command: tseg.make_func_widget
+      autogenerate: true
+      display_name: Example Function Widget
