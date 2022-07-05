@@ -11,31 +11,35 @@ contributions:
     - id: tseg.write_single_image
       python_name: tseg._writer:write_single_image
       title: Save image data with tseg
-    - id: tseg.make_qwidget
-      python_name: tseg._widget:ExampleQWidget
+    - id: tseg.make_inputoutput_widget
+      python_name: tseg._widget:InputOutputWidget
       title: Make example QWidget
-    - id: tseg.make_magic_widget
-      python_name: tseg._widget:example_magic_widget
-      title: Make example magic widget
-    - id: tseg.make_func_widget
-      python_name: tseg._widget:example_function_widget
-      title: Make example function widget
+    - id: tseg.make_preprocessing_widget
+      python_name: tseg._widget:PreProcessingWidget
+      title: Make Pre-Processing widget
+    - id: tseg.make_cnn_widget
+      python_name: tseg._widget:CNNWidget
+      title: Make CNN Detection widget
+    - id: tseg.make_seg_widget
+      python_name: tseg._widget:SegWidget
+      title: Make Seg Widget
   readers:
     - command: tseg.get_reader
       accepts_directories: false
-      filename_patterns: ['*.npy']
+      filename_patterns: ["*.npy"]
   writers:
     - command: tseg.write_multiple
-      layer_types: ['image*','labels*']
+      layer_types: ["image*", "labels*"]
       filename_extensions: []
     - command: tseg.write_single_image
-      layer_types: ['image']
-      filename_extensions: ['.npy']
+      layer_types: ["image"]
+      filename_extensions: [".npy"]
   widgets:
-    - command: tseg.make_qwidget
-      display_name: Example QWidget
-    - command: tseg.make_magic_widget
-      display_name: Example Magic Widget
-    - command: tseg.make_func_widget
-      autogenerate: true
-      display_name: Example Function Widget
+    - command: tseg.make_inputoutput_widget
+      display_name: Input/Output widget
+    - command: tseg.make_preprocessing_widget
+      display_name: Pre-Processing Widget
+    - command: tseg.make_cnn_widget
+      display_name: CNN Detection Widget
+    - command: tseg.make_seg_widget
+      display_name: Segmentation Widget

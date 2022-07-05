@@ -1,6 +1,6 @@
 import numpy as np
 
-from tseg import ExampleQWidget, example_magic_widget
+from tseg import InputOutputWidget, PreProcessingWidget
 
 
 # make_napari_viewer is a pytest fixture that returns a napari viewer object
@@ -11,7 +11,7 @@ def test_example_q_widget(make_napari_viewer, capsys):
     viewer.add_image(np.random.random((100, 100)))
 
     # create our widget, passing in the viewer
-    my_widget = ExampleQWidget(viewer)
+    my_widget = InputOutputWidget(viewer)
 
     # call our widget method
     my_widget._on_click()
@@ -21,12 +21,12 @@ def test_example_q_widget(make_napari_viewer, capsys):
     assert captured.out == "napari has 1 layers\n"
 
 
-def test_example_magic_widget(make_napari_viewer, capsys):
+def test_PreProcessingWidget(make_napari_viewer, capsys):
     viewer = make_napari_viewer()
     layer = viewer.add_image(np.random.random((100, 100)))
 
     # this time, our widget will be a MagicFactory or FunctionGui instance
-    my_widget = example_magic_widget()
+    my_widget = PreProcessingWidget()
 
     # if we "call" this object, it'll execute our function
     my_widget(viewer.layers[0])
