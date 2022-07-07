@@ -7,12 +7,14 @@ see: https://napari.org/plugins/guides.html?#widgets
 Replace code below according to your needs.
 """
 from typing import TYPE_CHECKING
-
+import tifffile
+from .load_files import *
 from magicgui import magic_factory
 from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
 from qtpy.QtWidgets import *
 from PyQt5.QtCore import *
 from enum import Enum
+import os
 
 if TYPE_CHECKING:
     import napari
@@ -36,13 +38,14 @@ CNNMODELS = ["generic confocal_3d_unet",
 STRIDES = ["Accurate", "Balanced", "Draft"]
 SEGMENTATION_ALGORITHMS = ["MutexWS", "GASP",
                            "Simple TK", "MultiCut", "DtWatershed", ]
+Input_Files = []
 
 
 class InputOutputWidget(QWidget):
     def __init__(self, napari_viewer):
         super().__init__()
         self.viewer = napari_viewer
-
+        self.Selected_Files = list()
         self.file_radiobutton = QRadioButton("Select Files")
         self.file_radiobutton.setChecked(True)
         self.file_radiobutton.clicked.connect(self._file_radio_clicked)
@@ -59,7 +62,8 @@ class InputOutputWidget(QWidget):
         layout.addWidget(inputGroupBox)
         totalVBox = QVBoxLayout()
         outputForm = QFormLayout()
-        self.outputDirName = QLineEdit("output")
+        self.outputDirName = QLineEdit(os.path.join(
+            os.path.expanduser('~'), "tseg_output"))
         outputForm.addRow("Output directory name", self.outputDirName)
         inputGroupBox.setLayout(totalVBox)
         outputGroupBox.setLayout(outputForm)
@@ -68,17 +72,56 @@ class InputOutputWidget(QWidget):
         # totalVBox.addStretch()
         layout.addWidget(outputGroupBox)
 
+        self.zsliceLbl = QLabel("Number of Z-slices:")
+        self.numZslices = QLineEdit()
+        self.loadButton = QPushButton("Load Files to the viewer")
+        self.nextBtn = QPushButton("Next")
+        self.nextBtn.setStyleSheet("""
+                                   QPushButton{
+                                   background-color: #198754;
+                                   border-color: #28a745;
+                                   }
+                                   QPushButton::hover
+                                   {
+                                   background-color: #218838;
+                                   border-color: #1e7e34;
+                                   }
+                                   QPushButton::pressed
+                                   {
+                                   background-color: #1e7e34;
+                                   border-color: #1c7430;
+                                   }
+                                   """)
+
         self.fileStack = QWidget()
         self.dirStack = QWidget()
 
         self.fileStackUI()
         self.dirStackUI()
 
+        self.loadButton.clicked.connect(
+            lambda: self._load_files_to_viewer(self.viewer))
+
         self.Stack = QStackedWidget(self)
         self.Stack.addWidget(self.fileStack)
         self.Stack.addWidget(self.dirStack)
 
+        zsliceHbox = QHBoxLayout()
+        zsliceHbox.addWidget(self.zsliceLbl)
+        zsliceHbox.addWidget(self.numZslices)
+
         totalVBox.addWidget(self.Stack)
+
+        totalVBox.addLayout(zsliceHbox)
+        totalVBox.addWidget(self.loadButton)
+        layout.addWidget(self.nextBtn)
+
+    def _load_files_to_viewer(self, napari_viewer):
+        print(self.Selected_Files)
+        loaded = load_as_nparray(self.Selected_Files)
+        # print(loaded)
+        for image in loaded:
+            napari_viewer.add_image(image["image_data"], name=image["name"])
 
     def _file_radio_clicked(self):
         self.displayStack(0)
@@ -113,14 +156,15 @@ class InputOutputWidget(QWidget):
         self.Stack.setCurrentIndex(i)
 
     def _file_on_click(self, fileListWidget: QListWidget):
-        files = QFileDialog.getOpenFileNames(
-            self, "select one or more files to open", "/home", "Images (*.tif *.tiff)")
-        for i, fileName in enumerate(files[0]):
-            fileListWidget.insertItem(i, fileName.split('/')[-1])
-
-            # gianni's function()
-            # if then else
-            # front.end.append(image.tif)
+        self.Selected_Files, _ = QFileDialog.getOpenFileNames(
+            self, "select one or more files to open", os.path.expanduser('~'), "Images (*.tif *.tiff)")
+        # print(files)
+        # self.Selected_Files = files
+        # for item in self.Selected_Files:
+        #     print(os.path.basename(item))
+        for i, fileName in enumerate(self.Selected_Files):
+            fileListWidget.insertItem(i, fileName)
+            # fileListWidget.insertItem(i, fileName.split('/')[-1])
 
     def _dir_on_click(self, dirLineEdit: QLineEdit):
         directory = QFileDialog.getExistingDirectory(
@@ -159,20 +203,6 @@ class PreProcessingWidget(QWidget):
 
     def _changed(self, gbox: QGroupBox):
         print(gbox.isChecked())
-# @ magic_factory
-# def example_magic_widget(img_layer: "napari.layers.Image"):
-#     print(f"you have selected {img_layer}")
-
-
-# # Uses the `autogenerate: true` flag in the plugin manifest
-# # to indicate it should be wrapped as a magicgui to autogenerate
-# # a widget.
-# def CNNWidget(img_layer: "napari.layers.Image"):
-#     print(f"you have selected {img_layer}")
-
-    # Uses the `autogenerate: true` flag in the plugin manifest
-    # to indicate it should be wrapped as a magicgui to autogenerate
-    # a widget.
 
 
 class CNNWidget(QWidget):
@@ -303,5 +333,10 @@ class SegWidget(QWidget):
 
 
 class TrackingWidget(QWidget):
+    def __init__(self, napari_viewer):
+        pass
+
+
+class ClassificationWidget(QWidget):
     def __init__(self, napari_viewer):
         pass

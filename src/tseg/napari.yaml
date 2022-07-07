@@ -1,5 +1,5 @@
 name: tseg
-display_name: tseg
+display_name: TSeg
 contributions:
   commands:
     - id: tseg.get_reader
@@ -11,18 +11,22 @@ contributions:
     - id: tseg.write_single_image
       python_name: tseg._writer:write_single_image
       title: Save image data with tseg
-    - id: tseg.make_inputoutput_widget
+    
+    - id: tseg.InputOutputWidget
       python_name: tseg._widget:InputOutputWidget
-      title: Make example QWidget
-    - id: tseg.make_preprocessing_widget
+      title: Input/Output
+    
+    - id: tseg.PreProcessingWidget
       python_name: tseg._widget:PreProcessingWidget
-      title: Make Pre-Processing widget
-    - id: tseg.make_cnn_widget
+      title: Pre-Processing
+    
+    - id: tseg.CNNWidget
       python_name: tseg._widget:CNNWidget
-      title: Make CNN Detection widget
-    - id: tseg.make_seg_widget
+      title: CNN Detection
+
+    - id: tseg.SegmentationWidget
       python_name: tseg._widget:SegWidget
-      title: Make Seg Widget
+      title: Segmentation
   readers:
     - command: tseg.get_reader
       accepts_directories: false
@@ -35,11 +39,11 @@ contributions:
       layer_types: ["image"]
       filename_extensions: [".npy"]
   widgets:
-    - command: tseg.make_inputoutput_widget
-      display_name: Input/Output widget
-    - command: tseg.make_preprocessing_widget
-      display_name: Pre-Processing Widget
-    - command: tseg.make_cnn_widget
-      display_name: CNN Detection Widget
-    - command: tseg.make_seg_widget
-      display_name: Segmentation Widget
+    - command: tseg.InputOutputWidget
+      display_name: Input/Output
+    - command: tseg.PreProcessingWidget
+      display_name: Pre-Processing
+    - command: tseg.CNNWidget
+      display_name: CNN Detection
+    - command: tseg.SegmentationWidget
+      display_name: Segmentation
