@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 
 def adaptive_thresh(img, sub_region, c_value):
@@ -8,3 +9,13 @@ def adaptive_thresh(img, sub_region, c_value):
     return thresh
 
 
+def log_transformation(image):
+
+    # Apply log transformation method
+    c = 255 / np.log(1 + np.max(image))
+    log_image = c * (np.log(image + 1))
+
+    # Specify the data type so that
+    # float value will be converted to int
+    log_image = np.array(log_image, dtype=np.uint8)
+    return log_image

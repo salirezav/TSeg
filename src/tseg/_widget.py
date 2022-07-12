@@ -236,20 +236,29 @@ class PreProcessingWidget(QWidget):
         self.c_val_slider.valueChanged.connect(
             lambda: self._c_value_changed(self.c_val_slider, self.c_val_lbl))
 
+        self.logTrans = QPushButton("Log transform")
+        self.logTrans.clicked.connect(lambda: self._log_transform_clicked())
+
         vbox.addWidget(self.sub_region_lbl)
         vbox.addWidget(self.sub_region)
         vbox.addWidget(self.c_val_lbl)
         vbox.addWidget(self.c_val_slider)
         vbox.addWidget(self.adap)
 
+        vbox.addWidget(self.logTrans)
+
         self.adap.clicked.connect(lambda: self.do_adaptive_thresh(self.viewer))
 
+    def _log_transform_clicked(self):
+        layer = self.viewer.layers.selection.active
+        img_data = layer.data
+        img2 = log_transformation(img_data)
+        self.viewer.add_image(img2, name="log transform")
+
     def _c_value_changed(self, slider: QSlider, c_value_lbl=QLabel):
-        print(slider.value())
         c_value_lbl.setText("C Value: " + str(slider.value()))
 
     def _sub_region_changed(self,  slider: QSlider, sub_region_label: QLabel):
-        print(slider.value())
         value = str(slider.value())
         sub_region_label.setText("Sub region size: " + value + "×"+value)
 
@@ -259,7 +268,6 @@ class PreProcessingWidget(QWidget):
         img2 = adaptive_thresh(
             img_data, self.sub_region.value(), self.c_val_slider.value())
         if "Adaptive Thresh" in self.viewer.layers:
-            print("found it")
             self.viewer.layers["Adaptive Thresh"].data = img2
         else:
             self.viewer.add_image(img2, name="Adaptive Thresh")
@@ -267,11 +275,11 @@ class PreProcessingWidget(QWidget):
 
     def _enable_disable(self):
         if self.enablePrep.isChecked():
-            print("ischecked")
+            # print("ischecked")
             self.thebtn.setEnabled(True)
             self.tfield.setEnabled(True)
         else:
-            print("not checked")
+            # print("not checked")
             self.thebtn.setEnabled(False)
             self.tfield.setEnabled(False)
 
