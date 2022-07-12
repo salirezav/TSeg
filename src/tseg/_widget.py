@@ -9,6 +9,7 @@ Replace code below according to your needs.
 from typing import TYPE_CHECKING
 import tifffile
 from .load_files import *
+from .prep import *
 from magicgui import magic_factory
 from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
 from qtpy.QtWidgets import *
@@ -38,7 +39,6 @@ CNNMODELS = ["generic confocal_3d_unet",
 STRIDES = ["Accurate", "Balanced", "Draft"]
 SEGMENTATION_ALGORITHMS = ["MutexWS", "GASP",
                            "Simple TK", "MultiCut", "DtWatershed", ]
-Input_Files = []
 
 
 class InputOutputWidget(QWidget):
@@ -46,6 +46,7 @@ class InputOutputWidget(QWidget):
         super().__init__()
         self.viewer = napari_viewer
         self.Selected_Files = list()
+        self.Input_Directory = ""
         self.file_radiobutton = QRadioButton("Select Files")
         self.file_radiobutton.setChecked(True)
         self.file_radiobutton.clicked.connect(self._file_radio_clicked)
@@ -64,7 +65,7 @@ class InputOutputWidget(QWidget):
         outputForm = QFormLayout()
         self.outputDirName = QLineEdit(os.path.join(
             os.path.expanduser('~'), "tseg_output"))
-        outputForm.addRow("Output directory name", self.outputDirName)
+        outputForm.addRow("Output directory path", self.outputDirName)
         inputGroupBox.setLayout(totalVBox)
         outputGroupBox.setLayout(outputForm)
         # layout.addLayout(outputForm,0,1)
@@ -72,8 +73,8 @@ class InputOutputWidget(QWidget):
         # totalVBox.addStretch()
         layout.addWidget(outputGroupBox)
 
-        self.zsliceLbl = QLabel("Number of Z-slices:")
-        self.numZslices = QLineEdit()
+        # self.zsliceLbl = QLabel("Number of Z-slices:")
+        # self.numZslices = QLineEdit()
         self.loadButton = QPushButton("Load Files to the viewer")
         self.nextBtn = QPushButton("Next")
         self.nextBtn.setStyleSheet("""
@@ -93,6 +94,7 @@ class InputOutputWidget(QWidget):
                                    }
                                    """)
 
+        self.nextBtn.clicked.connect(self._io_next)
         self.fileStack = QWidget()
         self.dirStack = QWidget()
 
@@ -107,21 +109,42 @@ class InputOutputWidget(QWidget):
         self.Stack.addWidget(self.dirStack)
 
         zsliceHbox = QHBoxLayout()
-        zsliceHbox.addWidget(self.zsliceLbl)
-        zsliceHbox.addWidget(self.numZslices)
+        # zsliceHbox.addWidget(self.zsliceLbl)
+        # zsliceHbox.addWidget(self.numZslices)
 
         totalVBox.addWidget(self.Stack)
 
         totalVBox.addLayout(zsliceHbox)
         totalVBox.addWidget(self.loadButton)
-        layout.addWidget(self.nextBtn)
+        # layout.addWidget(self.nextBtn)
+
+    def _io_next(self, viewer):
+        IOWidget = self.viewer.window._qt_window.findChild(
+            QWidget, name="tseg: Input/Output")
+        IOWidget.hide()
+        PreWidget = self.viewer.window._qt_window.findChild(
+            QWidget, name="tseg: Pre-Processing")
+        PreWidget.show()
+        # self.viewer.window.remove_dock_widget(InputOutputWidget(QWidget()))
 
     def _load_files_to_viewer(self, napari_viewer):
-        print(self.Selected_Files)
-        loaded = load_as_nparray(self.Selected_Files)
+        images_to_import = []
+        if self.file_radiobutton.isChecked():
+            qListWidget: qListWidget = self.fileStack.findChild(QListWidget)
+            images_to_import = [qListWidget.item(
+                i).text() for i in range(qListWidget.count())]
+        elif self.directory_radiobutton.isChecked():
+            print("ischecked")
+            qLineEdit: QLineEdit = self.dirStack.findChild(QLineEdit)
+            print("text is ", qLineEdit.text())
+            images_to_import = get_file_names(qLineEdit.text())
+            # print(images_to_import)
+        print('here')
+        # print(images_to_import)
+        loaded = load_image_from_file_as_nparray(images_to_import)
+        load_images_to_viewer(napari_viewer, loaded)
+
         # print(loaded)
-        for image in loaded:
-            napari_viewer.add_image(image["image_data"], name=image["name"])
 
     def _file_radio_clicked(self):
         self.displayStack(0)
@@ -143,7 +166,7 @@ class InputOutputWidget(QWidget):
     def dirStackUI(self):
         layout = QHBoxLayout()
 
-        self.dirLineEdit = QLineEdit("path/to/directory")
+        self.dirLineEdit = QLineEdit(os.path.expanduser('~'))
         self.browseDir = QPushButton("Select Directory")
         self.browseDir.clicked.connect(
             lambda: self._dir_on_click(self.dirLineEdit))
@@ -156,21 +179,24 @@ class InputOutputWidget(QWidget):
         self.Stack.setCurrentIndex(i)
 
     def _file_on_click(self, fileListWidget: QListWidget):
-        self.Selected_Files, _ = QFileDialog.getOpenFileNames(
+        fileNames, _ = QFileDialog.getOpenFileNames(
             self, "select one or more files to open", os.path.expanduser('~'), "Images (*.tif *.tiff)")
         # print(files)
         # self.Selected_Files = files
         # for item in self.Selected_Files:
         #     print(os.path.basename(item))
-        for i, fileName in enumerate(self.Selected_Files):
+        fileListWidget.clear()
+        for i, fileName in enumerate(fileNames):
             fileListWidget.insertItem(i, fileName)
+
             # fileListWidget.insertItem(i, fileName.split('/')[-1])
 
     def _dir_on_click(self, dirLineEdit: QLineEdit):
         directory = QFileDialog.getExistingDirectory(
             self, caption="Select the desired directory.")
         dirLineEdit.setText(directory)
-        # print(directory)
+        self.Input_Directory = directory
+        print(self.Input_Directory)
 
 
 class PreProcessingWidget(QWidget):
@@ -187,9 +213,57 @@ class PreProcessingWidget(QWidget):
         self.ppGroupBox.clicked.connect(lambda: self._changed(self.ppGroupBox))
         # layout.addLayout(vbox, 0, 0)
 
-        tfield = QLineEdit("stuff will be here")
-        vbox.addWidget(tfield)
-        # self.tfield.setEnabled(False)
+        self.adap = QPushButton("adaptive thresh")
+        self.sub_region = QSlider(Qt.Horizontal)
+        self.sub_region.setMinimum(1)
+        self.sub_region.setMaximum(100)
+        self.sub_region.setValue(21)
+        # self.sub_region.setPageStep(11)
+        self.sub_region.setTickInterval(2)
+        # self.sub_region.setSingleStep(0.02)
+        self.sub_region.setTickPosition(
+            QSlider.TickPosition.TicksBelow)
+        self.sub_region_lbl = QLabel(
+            "Sub region size: " + str(self.sub_region.value()) + "×"+str(self.sub_region.value()))
+        self.sub_region.valueChanged.connect(lambda: self._sub_region_changed(
+            self.sub_region, self.sub_region_lbl))
+
+        self.c_val_slider = QSlider(Qt.Horizontal)
+        self.c_val_slider.setMinimum(1)
+        self.c_val_slider.setMaximum(100)
+        self.c_val_slider.setValue(5)
+        self.c_val_lbl = QLabel("C Value: " + str(self.c_val_slider.value()))
+        self.c_val_slider.valueChanged.connect(
+            lambda: self._c_value_changed(self.c_val_slider, self.c_val_lbl))
+
+        vbox.addWidget(self.sub_region_lbl)
+        vbox.addWidget(self.sub_region)
+        vbox.addWidget(self.c_val_lbl)
+        vbox.addWidget(self.c_val_slider)
+        vbox.addWidget(self.adap)
+
+        self.adap.clicked.connect(lambda: self.do_adaptive_thresh(self.viewer))
+
+    def _c_value_changed(self, slider: QSlider, c_value_lbl=QLabel):
+        print(slider.value())
+        c_value_lbl.setText("C Value: " + str(slider.value()))
+
+    def _sub_region_changed(self,  slider: QSlider, sub_region_label: QLabel):
+        print(slider.value())
+        value = str(slider.value())
+        sub_region_label.setText("Sub region size: " + value + "×"+value)
+
+    def do_adaptive_thresh(self, viewer):
+        layer = self.viewer.layers.selection.active
+        img_data = layer.data
+        img2 = adaptive_thresh(
+            img_data, self.sub_region.value(), self.c_val_slider.value())
+        if "Adaptive Thresh" in self.viewer.layers:
+            print("found it")
+            self.viewer.layers["Adaptive Thresh"].data = img2
+        else:
+            self.viewer.add_image(img2, name="Adaptive Thresh")
+        self.viewer.layers.selection.active = layer
 
     def _enable_disable(self):
         if self.enablePrep.isChecked():
@@ -277,7 +351,6 @@ class SegWidget(QWidget):
         self.UnderOverFactorSldr.setPageStep(10)
         self.UnderOverFactorSldr.setTickInterval(1)
         self.UnderOverFactorSldr.setSingleStep(0.01)
-
         self.UnderOverFactorSldr.setTickPosition(
             QSlider.TickPosition.TicksBelow)
         self.factorValue = QLineEdit("0.6")

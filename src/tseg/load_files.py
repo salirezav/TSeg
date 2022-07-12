@@ -3,6 +3,7 @@ import tifffile
 import numpy as np
 import os
 import cv2
+import glob
 
 
 def create_dir_if_not_exist(directory):
@@ -11,7 +12,7 @@ def create_dir_if_not_exist(directory):
         os.makedirs(f'{os.getcwd()}/{directory}')
 
 
-def load_as_nparray(file_names) -> list:
+def load_image_from_file_as_nparray(file_names) -> list():
     images = [{"name": os.path.basename(file), "image_data": cv2.imread(file, cv2.IMREAD_GRAYSCALE)}
               for file in file_names]
     # all_images_nparray = np.asarray(images)
@@ -31,6 +32,19 @@ def to_grayscale_ndarray(image):
 
 def get_file_names(directory) -> list():
     # Gets all file names in the input directory and sorts them by name
-    file_names = glob.glob(f'{directory}/*.tif')
-    file_names = sorted(file_names)
-    return file_names
+    # file_names = glob.glob(f'{directory}*.tif*')
+    # file_names = sorted(file_names)
+    # print(file_names)
+    # return file_names
+
+    for file in os.listdir(directory):
+        # check only text files
+        if file.endswith('.tif'):
+            print(file)
+            yield os.path.join(directory, file)
+
+
+def load_images_to_viewer(napari_viewer, images_to_import):
+    for image in images_to_import:
+        napari_viewer.add_image(
+            image["image_data"], name=image["name"])
