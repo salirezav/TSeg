@@ -14,4 +14,5 @@ __all__ = (
     "write_multiple",
     "InputOutputWidget",
     "PreProcessingWidget",
+    "SegmentationWidget"
 )

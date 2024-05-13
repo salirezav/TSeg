@@ -6,7 +6,7 @@
         {
             "label": "conda tseg",
             "type": "shell",
-            "command": "conda activate tseg",
+            // "command": "conda activate tseg",
             "problemMatcher": [],
             // "isBackground": true,
             "presentation": {

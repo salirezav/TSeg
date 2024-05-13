@@ -39,6 +39,8 @@ CNNMODELS = ["generic confocal_3d_unet",
 STRIDES = ["Accurate", "Balanced", "Draft"]
 SEGMENTATION_ALGORITHMS = ["MutexWS", "GASP",
                            "Simple TK", "MultiCut", "DtWatershed", ]
+output_dir = os.path.join(os.path.expanduser('~'), "tseg_output")
+print(output_dir)
 
 
 class InputOutputWidget(QWidget):
@@ -59,12 +61,14 @@ class InputOutputWidget(QWidget):
         layout = QGridLayout(self)
         inputGroupBox = QGroupBox(
             "Input: Select files or a directory", checkable=False)
-        outputGroupBox = QGroupBox("Output. Specify the output folder name")
+        outputGroupBox = QGroupBox("Output: Specify the output folder name")
         layout.addWidget(inputGroupBox)
         totalVBox = QVBoxLayout()
         outputForm = QFormLayout()
         self.outputDirName = QLineEdit(os.path.join(
             os.path.expanduser('~'), "tseg_output"))
+        self.outputDirName.textChanged.connect(
+            lambda: self._output_dir_changed(self.outputDirName.text()))
         outputForm.addRow("Output directory path", self.outputDirName)
         inputGroupBox.setLayout(totalVBox)
         outputGroupBox.setLayout(outputForm)
@@ -76,6 +80,26 @@ class InputOutputWidget(QWidget):
         # self.zsliceLbl = QLabel("Number of Z-slices:")
         # self.numZslices = QLineEdit()
         self.loadButton = QPushButton("Load Files to the viewer")
+        self.loadButton.setStyleSheet("""
+                                   QPushButton{
+                                   background-color: #198754;
+                                   border-color: #28a745;
+                                   }
+                                   QPushButton::hover
+                                   {
+                                   background-color: #218838;
+                                   border-color: #1e7e34;
+                                   }
+                                   QPushButton::pressed
+                                   {
+                                   background-color: #1e7e34;
+                                   border-color: #1c7430;
+                                   }
+                                   """)
+        self.save_as_gray_btn = QPushButton("Save all as grayscale...")
+        self.save_as_gray_btn.clicked.connect(
+            lambda: self.save_as_grayscale(napari_viewer))
+
         self.nextBtn = QPushButton("Next")
         self.nextBtn.setStyleSheet("""
                                    QPushButton{
@@ -116,7 +140,36 @@ class InputOutputWidget(QWidget):
 
         totalVBox.addLayout(zsliceHbox)
         totalVBox.addWidget(self.loadButton)
+        totalVBox.addWidget(self.save_as_gray_btn)
         # layout.addWidget(self.nextBtn)
+
+    def save_as_grayscale(self, napari_viewer):
+        images_to_import = []
+
+        select_grayscale_directory = QFileDialog.getExistingDirectory(
+            self, caption="Select the desired directory.")
+        grayscale_output_directory = os.path.join(
+            select_grayscale_directory, "grayscale")
+
+        if self.file_radiobutton.isChecked():
+            qListWidget: qListWidget = self.fileStack.findChild(
+                QListWidget)
+            images_to_import = [qListWidget.item(
+                i).text() for i in range(qListWidget.count())]
+        elif self.directory_radiobutton.isChecked():
+            qLineEdit: QLineEdit = self.dirStack.findChild(QLineEdit)
+            images_to_import = get_file_names(qLineEdit.text())
+        print(images_to_import)
+
+        loaded = load_image_from_file_as_nparray(images_to_import)
+
+        for image in loaded:
+            # image["image_data"] = to_grayscale_ndarray(image["image_data"])
+            save_to_output_dir(image["image_data"],
+                               image["name"], grayscale_output_directory)
+        msg = QMessageBox(QMessageBox.Information, "Save as grayscale", "Images saved as grayscale into the following directory: \n" +
+                          grayscale_output_directory+"\nConsider changing the input directory/files")
+        msg.exec_()
 
     def _io_next(self, viewer):
         IOWidget = self.viewer.window._qt_window.findChild(
@@ -127,6 +180,10 @@ class InputOutputWidget(QWidget):
         PreWidget.show()
         # self.viewer.window.remove_dock_widget(InputOutputWidget(QWidget()))
 
+    def _output_dir_changed(self, text):
+        output_dir = text
+        print(output_dir)
+
     def _load_files_to_viewer(self, napari_viewer):
         images_to_import = []
         if self.file_radiobutton.isChecked():
@@ -134,12 +191,12 @@ class InputOutputWidget(QWidget):
             images_to_import = [qListWidget.item(
                 i).text() for i in range(qListWidget.count())]
         elif self.directory_radiobutton.isChecked():
-            print("ischecked")
+            # print("ischecked")
             qLineEdit: QLineEdit = self.dirStack.findChild(QLineEdit)
-            print("text is ", qLineEdit.text())
+            # print("text is ", qLineEdit.text())
             images_to_import = get_file_names(qLineEdit.text())
             # print(images_to_import)
-        print('here')
+        # print('here')
         # print(images_to_import)
         loaded = load_image_from_file_as_nparray(images_to_import)
         load_images_to_viewer(napari_viewer, loaded)
@@ -317,6 +374,9 @@ class CNNWidget(QWidget):
         useCuda = QCheckBox()
         outTiff = QCheckBox()
 
+        btn = QPushButton("Execute")
+        btn.clicked.connect(lambda: self._execute_cnn_detection())
+
         gridLayout.addWidget(QLabel("CNN Model"), 0, 0)
         gridLayout.addWidget(cnnModelsDD, 0, 1, 1, 3)
         gridLayout.addWidget(QLabel("Patch Size (Z,X,Y)"), 1, 0)
@@ -331,6 +391,16 @@ class CNNWidget(QWidget):
         gridLayout.addWidget(useCuda, 3, 1)
         gridLayout.addWidget(QLabel("Output .tif?"), 4, 0)
         gridLayout.addWidget(outTiff, 4, 1)
+        gridLayout.addWidget(btn, 5, 0, 6, 5)
+
+    def _execute_cnn_detection(self):
+
+        IOWidget = self.viewer.window._qt_window.findChild(
+            QWidget, name="tseg: Input/Output").findChild(QGridLayout).findChild(QGroupBox).findChild(QLineEdit, name="outputDirName")
+        dirname = IOWidget.findChild(QLineEdit, name="outputDirName")
+        output_dir = dirname.text()
+        for layer in self.viewer.layers:
+            save_to_output_dir(layer.data, layer.name, output_dir)
 
 
 class SegWidget(QWidget):

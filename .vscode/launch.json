@@ -9,13 +9,17 @@
             "type": "python",
             "request": "launch",
             "module": "napari",
-            "autoReload": {"enable": true},
-            "preLaunchTask": "conda tseg",
+            "autoReload": {
+                "enable": true
+            },
+            // "preLaunchTask": "conda tseg",
             "args": [
                 "-w",
                 "tseg",
                 "Input/Output",
-                "Pre-Processing"
+                // "Pre-Processing"
+                // "CNN Detection"
+                "Segmentation"
             ],
             "justMyCode": true
         }

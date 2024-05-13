@@ -19,7 +19,7 @@ contributions:
     - id: tseg.PreProcessingWidget
       python_name: tseg._widget:PreProcessingWidget
       title: Pre-Processing
-    
+
     - id: tseg.CNNWidget
       python_name: tseg._widget:CNNWidget
       title: CNN Detection
