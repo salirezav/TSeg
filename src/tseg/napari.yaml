@@ -2,48 +2,67 @@ name: tseg
 display_name: TSeg
 contributions:
   commands:
-    - id: tseg.get_reader
-      python_name: tseg._reader:napari_get_reader
-      title: Open data with tseg
-    - id: tseg.write_multiple
-      python_name: tseg._writer:write_multiple
-      title: Save multi-layer data with tseg
-    - id: tseg.write_single_image
-      python_name: tseg._writer:write_single_image
-      title: Save image data with tseg
-    
-    - id: tseg.InputOutputWidget
-      python_name: tseg._widget:InputOutputWidget
-      title: Input/Output
-    
-    - id: tseg.PreProcessingWidget
-      python_name: tseg._widget:PreProcessingWidget
-      title: Pre-Processing
+  - id: tseg.get_reader
+    python_name: tseg._reader:napari_get_reader
+    title: Open data with tseg
 
-    - id: tseg.CNNWidget
-      python_name: tseg._widget:CNNWidget
-      title: CNN Detection
+  - id: tseg.write_multiple
+    python_name: tseg._writer:write_multiple
+    title: Save multi-layer data with tseg
 
-    - id: tseg.SegmentationWidget
-      python_name: tseg._widget:SegWidget
-      title: Segmentation
+  - id: tseg.write_single_image
+    python_name: tseg._writer:write_single_image
+    title: Save image data with tseg
+
+  - id: tseg.InputOutputWidget
+    python_name: tseg.widgets.io_widget:InputOutputWidget
+    title: Input/Output
+
+  - id: tseg.PreProcessingWidget
+    python_name: tseg._widget:PreProcessingWidget
+    title: Pre-Processing
+
+  - id: tseg.CNNWidget
+    python_name: tseg._widget:CNNWidget
+    title: CNN Detection
+
+  - id: tseg.SegmentationWidget
+    python_name: tseg._widget:SegWidget
+    title: Segmentation
   readers:
-    - command: tseg.get_reader
-      accepts_directories: false
-      filename_patterns: ["*.npy"]
+  - command: tseg.get_reader
+    accepts_directories: false
+    filename_patterns: [ "*.npy" ]
   writers:
-    - command: tseg.write_multiple
-      layer_types: ["image*", "labels*"]
-      filename_extensions: []
-    - command: tseg.write_single_image
-      layer_types: ["image"]
-      filename_extensions: [".npy"]
+  - command: tseg.write_multiple
+    layer_types: [ "image*", "labels*" ]
+    filename_extensions: []
+  - command: tseg.write_single_image
+    layer_types: [ "image" ]
+    filename_extensions: [ ".npy" ]
   widgets:
-    - command: tseg.InputOutputWidget
-      display_name: Input/Output
-    - command: tseg.PreProcessingWidget
-      display_name: Pre-Processing
-    - command: tseg.CNNWidget
-      display_name: CNN Detection
-    - command: tseg.SegmentationWidget
-      display_name: Segmentation
+  - command: tseg.InputOutputWidget
+    display_name: Input/Output
+  - command: tseg.PreProcessingWidget
+    display_name: Pre-Processing
+  - command: tseg.CNNWidget
+    display_name: CNN Detection
+  - command: tseg.SegmentationWidget
+    display_name: Segmentation
+  themes:
+  - id: monokai
+    label: Monokai
+    type: dark
+    syntax_style: monokai
+    colors:
+      canvas: black
+      console: black
+      background: '#272822'
+      foreground: '#75715e'
+      primary: '#cfcfc2'
+      secondary: '#f8f8f2'
+      highlight: '#e6db74'
+      text: '#a1ef34'
+      icon: '#a1ef34'
+      warning: '#f92672'
+      current: '#66d9ef'

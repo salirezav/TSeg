@@ -5,8 +5,10 @@ except ImportError:
     __version__ = "unknown"
 
 from ._reader import napari_get_reader
-from ._widget import InputOutputWidget, PreProcessingWidget
+from ._widget import PreProcessingWidget
 from ._writer import write_multiple, write_single_image
+# from io import InputOutputWidget
+
 
 __all__ = (
     "napari_get_reader",
