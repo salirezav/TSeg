@@ -2,6 +2,8 @@ from qtpy.QtWidgets import *
 from qtpy.QtCore import Qt
 from ..config import shared_config  # Import shared_config
 
+from .prep import *
+
 class PreProcessingWidget(QWidget):
     def __init__(self, napari_viewer):
         super().__init__()

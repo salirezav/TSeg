@@ -29,7 +29,7 @@ class InputOutputWidget(QWidget):
         layout = QGridLayout(self)
         inputGroupBox = QGroupBox("Input: Select files or a directory", checkable=False)
         outputGroupBox = QGroupBox("Output: Specify the output folder name")
-        layout.addWidget(inputGroupBox)
+        layout.addWidget(inputGroupBox, 0, 0, Qt.AlignTop)
         totalVBox = QVBoxLayout()
         outputForm = QFormLayout()
         self.outputDirName = QLineEdit(os.path.join(os.path.expanduser("~"), "tseg_output"))
@@ -40,7 +40,13 @@ class InputOutputWidget(QWidget):
         # layout.addLayout(outputForm,0,1)
         totalVBox.addLayout(radioHBox)
         # totalVBox.addStretch()
-        layout.addWidget(outputGroupBox)
+        layout.addWidget(outputGroupBox, 1, 0, Qt.AlignTop)
+
+        inputGroupBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        outputGroupBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+        # layout.addItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding), 2, 0)
+        # layout.addItem(QSpacerItem(10, 10, QSizePolicy.Expanding, QSizePolicy.Minimum), 0, 1)
 
         # self.zsliceLbl = QLabel("Number of Z-slices:")
         # self.numZslices = QLineEdit()
@@ -211,16 +217,18 @@ class InputOutputWidget(QWidget):
         self.Stack.setCurrentIndex(i)
 
     def _file_on_click(self, fileListWidget: QListWidget):
-        fileNames, _ = QFileDialog.getOpenFileNames(self, "select one or more files to open", os.path.expanduser("~"), "Images (*.tif *.tiff)")
-        # print(files)
-        # self.Selected_Files = files
-        # for item in self.Selected_Files:
-        #     print(os.path.basename(item))
+        fileNames, _ = QFileDialog.getOpenFileNames(self, "Select one or more files to open", os.path.expanduser("~"), "Images (*.tif *.tiff)")
+
+        # Clear and update the QListWidget with selected file paths
         fileListWidget.clear()
         for i, fileName in enumerate(fileNames):
             fileListWidget.insertItem(i, fileName)
 
-            # fileListWidget.insertItem(i, fileName.split('/')[-1])
+        # Update shared_config with the list of file paths
+        shared_config["selected_files"] = fileNames
+
+        # Print for verification
+        print("Updated shared_config['selected_files']:", shared_config["selected_files"])
 
     def _dir_on_click(self, dirLineEdit: QLineEdit):
         directory = QFileDialog.getExistingDirectory(self, caption="Select the desired directory.")
