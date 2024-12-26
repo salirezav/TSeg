@@ -23,7 +23,7 @@ class CNNWidget(QWidget):
         self.model_names = self.model_zoo.get_model_names()
 
         # Main GroupBox
-        gbox = QGroupBox("CNN Prediction", checkable=True)
+        gbox = QGroupBox("PlantSeg Models", checkable=True)
         gbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         layout.addWidget(gbox, 0, 0, Qt.AlignTop | Qt.AlignHCenter)
 
@@ -40,12 +40,13 @@ class CNNWidget(QWidget):
             spinbox = QSpinBox()
             spinbox.setRange(minimum, maximum)
             spinbox.setValue(default_value)
+            spinbox.setMaximumWidth(10)
             if tooltip:
                 spinbox.setToolTip(tooltip)
             return spinbox
 
         # Patch size inputs
-        self.patchsizeZ = create_spinbox(4, tooltip="Patch Size Z")
+        self.patchsizeZ = create_spinbox(1, tooltip="Patch Size Z")
         self.patchsizeX = create_spinbox(128, tooltip="Patch Size X")
         self.patchsizeY = create_spinbox(128, tooltip="Patch Size Y")
 
@@ -114,7 +115,7 @@ class CNNWidget(QWidget):
         # Callback when the worker is done
         def on_done(predicted_images):
             self.progressLabel.setText("Prediction complete!")
-            self.viewer.add_image(predicted_images)
+            self.viewer.add_image(predicted_images[0].get_data())
             # load_images_to_viewer(self.viewer, predicted_images)
 
         # Handle errors
