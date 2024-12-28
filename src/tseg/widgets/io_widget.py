@@ -15,6 +15,8 @@ class InputOutputWidget(QWidget):
     def __init__(self, napari_viewer):
         super().__init__()
         self.viewer = napari_viewer
+        
+        
         self.Selected_Files = list()
         self.Input_Directory = ""
         self.file_radiobutton = QRadioButton("Select Files")
@@ -217,7 +219,7 @@ class InputOutputWidget(QWidget):
         self.Stack.setCurrentIndex(i)
 
     def _file_on_click(self, fileListWidget: QListWidget):
-        fileNames, _ = QFileDialog.getOpenFileNames(self, "Select one or more files to open", os.path.expanduser("~"), "Images (*.tif *.tiff)")
+        fileNames, _ = QFileDialog.getOpenFileNames(self, "Select one or more files to open", os.path.expanduser("~"), "Images (*.tif *.tiff *.png *.jpg)")
 
         # Clear and update the QListWidget with selected file paths
         fileListWidget.clear()

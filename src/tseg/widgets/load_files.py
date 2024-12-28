@@ -7,6 +7,7 @@ import glob
 from qtpy.QtWidgets import *
 from qtpy.QtCore import Qt
 from ..config import *  # Import shared_config
+import tifffile
 
 rgb_weights = [0.2989, 0.5870, 0.1140]
 
@@ -20,8 +21,16 @@ def create_dir_if_not_exist(directory):
 
 
 def load_image_from_file_as_nparray(file_names) -> list:
-    images = [{"name": os.path.basename(file), "image_data": cv2.imread(file, cv2.IMREAD_GRAYSCALE)} for file in file_names]
-    # all_images_nparray = np.asarray(images)
+    images = []
+    for file in file_names:
+        ext = os.path.splitext(file)[1].lower()
+        if ext in ['.tif', '.tiff']:
+            image_data = tifffile.imread(file)
+        elif ext in ['.png', '.jpg', '.jpeg']:
+            image_data = cv2.imread(file, cv2.IMREAD_UNCHANGED)
+        else:
+            continue
+        images.append({"name": os.path.basename(file), "image_data": image_data})
     return images
 
 

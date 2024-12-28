@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QGroupBox, QComboBox, QLabel, QCheckBox, QPushButton, QSpinBox, QDoubleSpinBox, QSizePolicy, QSpacerItem, QFrame
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QFormLayout, QHBoxLayout, QGroupBox, QComboBox, QLabel, QCheckBox, QPushButton, QSpinBox, QDoubleSpinBox, QSizePolicy, QSpacerItem, QFrame, QRadioButton, QButtonGroup
 from PyQt5.QtCore import Qt
 from pathlib import Path
 from napari.qt.threading import create_worker
@@ -10,13 +10,26 @@ from ..config import shared_config
 from plantseg import PATH_MODEL_ZOO, PATH_MODEL_ZOO_CUSTOM
 import cellpose.models  # Import CellPose models
 from cellpose import io
+from enum import Enum
+
+
+class ImageLayout(Enum):
+    YX = "YX"
+    CYX = "CYX"
+    ZYX = "ZYX"
+    CZYX = "CZYX"
+    ZCYX = "ZCYX"
+
+    @classmethod
+    def to_choices(cls) -> list[str]:
+        return [il.value for il in cls]
 
 
 class CNNWidget(QWidget):
     def __init__(self, napari_viewer):
         super().__init__()
         self.viewer = napari_viewer
-        layout = QGridLayout(self)
+        layout = QVBoxLayout(self)
 
         def _populate_image_dropdown(dropdown):
             dropdown.clear()
@@ -33,12 +46,12 @@ class CNNWidget(QWidget):
 
             # PlantSeg Section
             plantsegLabel = QLabel("PlantSeg Models")
-            plantsegLabel.setAlignment(Qt.AlignCenter)
-            plantsegLabel.setStyleSheet("font-weight: bold;")
-            layout.addWidget(plantsegLabel, 0, 0, 1, 2, Qt.AlignTop | Qt.AlignHCenter)
+            plantsegLabel.setAlignment(Qt.AlignLeft)
+            plantsegLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
+            layout.addWidget(plantsegLabel)
 
-            gridLayout = QGridLayout()
-            layout.addLayout(gridLayout, 1, 0, 1, 2)
+            formLayout = QFormLayout()
+            layout.addLayout(formLayout)
 
             # Image to Use Dropdown
             self.plantsegImageDD = QComboBox(self)
@@ -55,7 +68,7 @@ class CNNWidget(QWidget):
                 spinbox = QSpinBox()
                 spinbox.setRange(minimum, maximum)
                 spinbox.setValue(default_value)
-                spinbox.setMaximumWidth(10)
+                spinbox.setMaximumWidth(50)
                 if tooltip:
                     spinbox.setToolTip(tooltip)
                 return spinbox
@@ -64,54 +77,58 @@ class CNNWidget(QWidget):
             self.patchsizeZ = create_spinbox(1, tooltip="Patch Size Z")
             self.patchsizeX = create_spinbox(128, tooltip="Patch Size X")
             self.patchsizeY = create_spinbox(128, tooltip="Patch Size Y")
+            patchSizeLayout = QHBoxLayout()
+            patchSizeLayout.addWidget(self.patchsizeZ)
+            patchSizeLayout.addWidget(self.patchsizeX)
+            patchSizeLayout.addWidget(self.patchsizeY)
 
             # Stride inputs
             self.strideZ = create_spinbox(1, tooltip="Stride Z")
             self.strideX = create_spinbox(64, tooltip="Stride X")
             self.strideY = create_spinbox(64, tooltip="Stride Y")
+            strideLayout = QHBoxLayout()
+            strideLayout.addWidget(self.strideZ)
+            strideLayout.addWidget(self.strideX)
+            strideLayout.addWidget(self.strideY)
+
+            # Stack Layout Radio Buttons
+            self.stackLayoutGroup = QButtonGroup(self)
+            stackLayoutHBox = QHBoxLayout()
+            for layout_choice in ImageLayout.to_choices():
+                radio_button = QRadioButton(layout_choice)
+                self.stackLayoutGroup.addButton(radio_button)
+                stackLayoutHBox.addWidget(radio_button)
+            self.stackLayoutGroup.buttons()[0].setChecked(True)  # Set default selection
 
             # Checkboxes
             self.useCuda = QCheckBox()
             self.progressLabel = QLabel("")  # Progress label
+            self.progressLabel.setMaximumWidth(300)
+            self.progressLabel.setMaximumHeight(50)
 
             # Execute Button
             self.plantsegExecuteBtn = QPushButton("Execute")
             self.plantsegExecuteBtn.clicked.connect(self._start_cnn_detection)
 
             # Add Widgets to the Layout
-            gridLayout.addWidget(QLabel("Image to Use"), 0, 0)
-            gridLayout.addWidget(self.plantsegImageDD, 0, 1, 1, 3)
-
-            gridLayout.addWidget(QLabel("CNN Model"), 1, 0)
-            gridLayout.addWidget(self.cnnModelsDD, 1, 1, 1, 3)
-
-            gridLayout.addWidget(QLabel("Patch Size (Z,X,Y)"), 2, 0)
-            gridLayout.addWidget(self.patchsizeZ, 2, 1)
-            gridLayout.addWidget(self.patchsizeX, 2, 2)
-            gridLayout.addWidget(self.patchsizeY, 2, 3)
-
-            gridLayout.addWidget(QLabel("Stride (Z,X,Y)"), 3, 0)
-            gridLayout.addWidget(self.strideZ, 3, 1)
-            gridLayout.addWidget(self.strideX, 3, 2)
-            gridLayout.addWidget(self.strideY, 3, 3)
-
-            gridLayout.addWidget(QLabel("Use CUDA?"), 4, 0)
-            gridLayout.addWidget(self.useCuda, 4, 1)
-
-            gridLayout.addWidget(self.plantsegExecuteBtn, 5, 0, 1, 4, alignment=Qt.AlignCenter)
-            gridLayout.addWidget(self.progressLabel, 6, 0, 1, 4)
-
-            gridLayout.addItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding), 7, 0)
+            formLayout.addRow("Image to Use", self.plantsegImageDD)
+            formLayout.addRow("CNN Model", self.cnnModelsDD)
+            formLayout.addRow("Patch Size (Z,X,Y)", patchSizeLayout)
+            formLayout.addRow("Stride (Z,X,Y)", strideLayout)
+            formLayout.addRow("Stack Layout", stackLayoutHBox)
+            formLayout.addRow("Use CUDA?", self.useCuda)
+            formLayout.addRow(self.plantsegExecuteBtn)
+            formLayout.addRow(self.progressLabel)
 
         def _create_cellpose_elements():
             # CellPose Section
             cellposeLabel = QLabel("CellPose Models")
-            cellposeLabel.setAlignment(Qt.AlignCenter)
-            cellposeLabel.setStyleSheet("font-weight: bold;")
-            layout.addWidget(cellposeLabel, 2, 0, 1, 2, Qt.AlignTop | Qt.AlignHCenter)
+            cellposeLabel.setAlignment(Qt.AlignLeft)
+            cellposeLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
+            layout.addWidget(cellposeLabel)
 
-            gridLayout = QGridLayout()
-            layout.addLayout(gridLayout, 3, 0, 1, 2)
+            formLayout = QFormLayout()
+            layout.addLayout(formLayout)
 
             # Image to Use Dropdown
             self.cellposeImageDD = QComboBox(self)
@@ -127,39 +144,31 @@ class CNNWidget(QWidget):
             self.meanDiameter = QDoubleSpinBox()
             self.meanDiameter.setRange(0.0, 1000.0)
             self.meanDiameter.setValue(30.0)
-            self.meanDiameter.setMaximumWidth(10)
+            self.meanDiameter.setMaximumWidth(50)
             self.meanDiameter.setToolTip("Mean Diameter")
 
             # Use GPU Checkbox
             self.useGpu = QCheckBox()
             self.cellposeProgressLabel = QLabel("")  # Progress label
+            self.cellposeProgressLabel.setMaximumWidth(300)
+            self.cellposeProgressLabel.setMaximumHeight(50)
 
             # Execute Button
             self.cellposeExecuteBtn = QPushButton("Execute")
             self.cellposeExecuteBtn.clicked.connect(self._start_cellpose_detection)
 
             # Add Widgets to the Layout
-            gridLayout.addWidget(QLabel("Image to Use"), 0, 0)
-            gridLayout.addWidget(self.cellposeImageDD, 0, 1, 1, 3)
-
-            gridLayout.addWidget(QLabel("CellPose Model"), 1, 0)
-            gridLayout.addWidget(self.cellposeModelsDD, 1, 1, 1, 3)
-
-            gridLayout.addWidget(QLabel("Mean Diameter"), 2, 0)
-            gridLayout.addWidget(self.meanDiameter, 2, 1, 1, 3)
-
-            gridLayout.addWidget(QLabel("Use GPU?"), 3, 0)
-            gridLayout.addWidget(self.useGpu, 3, 1)
-
-            gridLayout.addWidget(self.cellposeExecuteBtn, 4, 0, 1, 4, alignment=Qt.AlignCenter)
-            gridLayout.addWidget(self.cellposeProgressLabel, 5, 0, 1, 4)
-
-            gridLayout.addItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding), 6, 0)
+            formLayout.addRow("Image to Use", self.cellposeImageDD)
+            formLayout.addRow("CellPose Model", self.cellposeModelsDD)
+            formLayout.addRow("Mean Diameter", self.meanDiameter)
+            formLayout.addRow("Use GPU?", self.useGpu)
+            formLayout.addRow(self.cellposeExecuteBtn)
+            formLayout.addRow(self.cellposeProgressLabel)
 
         self.cellpose_model_names = cellpose.models.MODEL_NAMES  # Define cellpose_model_names
 
         _create_plantseg_elements()
-        layout.addWidget(QFrame(frameShape=QFrame.HLine), 1, 0, 1, 2)  # Add horizontal divider
+        layout.addWidget(QFrame(frameShape=QFrame.HLine))  # Add horizontal divider
         _create_cellpose_elements()
 
         # Connect layer events to update dropdowns
@@ -185,6 +194,9 @@ class CNNWidget(QWidget):
         selected_layer = self.viewer.layers[selected_image]
         selected_image_path = selected_layer.metadata.get("path", "")
 
+        # Get selected stack layout
+        stack_layout = self.stackLayoutGroup.checkedButton().text()
+
         input_path = Path(selected_image_path)
         selected_model = self.cnnModelsDD.currentText()
         self.progressLabel.setText(f"Starting CNN prediction with model: {selected_model}...")
@@ -192,15 +204,15 @@ class CNNWidget(QWidget):
 
         # Worker task function
         def worker_task():
-            plantseg_image = import_image_task(input_path=input_path, semantic_type="raw", stack_layout="YX")
+            plantseg_image = import_image_task(input_path=input_path, semantic_type="raw", stack_layout=stack_layout)
             return unet_prediction_task(
                 image=plantseg_image,
                 model_name=selected_model,
                 model_id=None,
                 suffix="_prediction",
                 patch=patch_size,
-                # stride=stride_size,
                 device="cuda" if use_cuda else "cpu",
+                # patch_halo=stride_size,
             )
 
         # Callback when the worker is done
