@@ -44,9 +44,9 @@ def get_file_names(directory) -> list:
     return file_names
 
 
-def load_images_to_viewer(napari_viewer, images_to_import):
-    for image in images_to_import:
-        napari_viewer.add_image(image["image_data"], name=image["name"])
+def load_images_to_viewer(napari_viewer, images_to_import, image_paths):
+    for image, path in zip(images_to_import, image_paths):
+        napari_viewer.add_image(image["image_data"], name=image["name"], metadata={"path": path})
 
 
 def to_grayscale_ndarray(image):

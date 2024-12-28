@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QGroupBox, QComboBox, QLabel, QCheckBox, QPushButton, QSpinBox, QDoubleSpinBox, QSizePolicy, QSpacerItem
+from PyQt5.QtWidgets import QWidget, QGridLayout, QGroupBox, QComboBox, QLabel, QCheckBox, QPushButton, QSpinBox, QDoubleSpinBox, QSizePolicy, QSpacerItem, QFrame
 from PyQt5.QtCore import Qt
 from pathlib import Path
 from napari.qt.threading import create_worker
@@ -31,19 +31,19 @@ class CNNWidget(QWidget):
             self.model_zoo = ModelZoo(path_zoo=ps, path_zoo_custom=psc)
             self.model_names = self.model_zoo.get_model_names()
 
-            # Main GroupBox
-            gbox = QGroupBox("PlantSeg Models", checkable=True)
-            gbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            layout.addWidget(gbox, 0, 0, Qt.AlignTop | Qt.AlignHCenter)
+            # PlantSeg Section
+            plantsegLabel = QLabel("PlantSeg Models")
+            plantsegLabel.setAlignment(Qt.AlignCenter)
+            plantsegLabel.setStyleSheet("font-weight: bold;")
+            layout.addWidget(plantsegLabel, 0, 0, 1, 2, Qt.AlignTop | Qt.AlignHCenter)
 
             gridLayout = QGridLayout()
-            gbox.setLayout(gridLayout)
+            layout.addLayout(gridLayout, 1, 0, 1, 2)
 
             # Image to Use Dropdown
             self.plantsegImageDD = QComboBox(self)
             _populate_image_dropdown(self.plantsegImageDD)
             self.plantsegImageDD.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            # self.plantsegImageDD.view().pressed.connect(lambda: _populate_image_dropdown(self.plantsegImageDD))
 
             # CNN Models Dropdown
             self.cnnModelsDD = QComboBox(self)
@@ -104,22 +104,19 @@ class CNNWidget(QWidget):
             gridLayout.addItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding), 7, 0)
 
         def _create_cellpose_elements():
-            # Initialize CellPose model names
-            self.cellpose_model_names = cellpose.models.MODEL_NAMES
-
-            # Main GroupBox
-            gbox = QGroupBox("CellPose Models", checkable=True)
-            gbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            layout.addWidget(gbox, 1, 0, Qt.AlignTop | Qt.AlignHCenter)
+            # CellPose Section
+            cellposeLabel = QLabel("CellPose Models")
+            cellposeLabel.setAlignment(Qt.AlignCenter)
+            cellposeLabel.setStyleSheet("font-weight: bold;")
+            layout.addWidget(cellposeLabel, 2, 0, 1, 2, Qt.AlignTop | Qt.AlignHCenter)
 
             gridLayout = QGridLayout()
-            gbox.setLayout(gridLayout)
+            layout.addLayout(gridLayout, 3, 0, 1, 2)
 
             # Image to Use Dropdown
             self.cellposeImageDD = QComboBox(self)
             _populate_image_dropdown(self.cellposeImageDD)
             self.cellposeImageDD.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            # self.cellposeImageDD.view().pressed.connect(lambda: _populate_image_dropdown(self.cellposeImageDD))
 
             # CellPose Models Dropdown
             self.cellposeModelsDD = QComboBox(self)
@@ -159,7 +156,10 @@ class CNNWidget(QWidget):
 
             gridLayout.addItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding), 6, 0)
 
+        self.cellpose_model_names = cellpose.models.MODEL_NAMES  # Define cellpose_model_names
+
         _create_plantseg_elements()
+        layout.addWidget(QFrame(frameShape=QFrame.HLine), 1, 0, 1, 2)  # Add horizontal divider
         _create_cellpose_elements()
 
         # Connect layer events to update dropdowns
@@ -181,7 +181,11 @@ class CNNWidget(QWidget):
             self.progressLabel.setText("No image selected!")
             return
 
-        input_path = Path(files_to_use[0])
+        # Extract the path of the selected image
+        selected_layer = self.viewer.layers[selected_image]
+        selected_image_path = selected_layer.metadata.get("path", "")
+
+        input_path = Path(selected_image_path)
         selected_model = self.cnnModelsDD.currentText()
         self.progressLabel.setText(f"Starting CNN prediction with model: {selected_model}...")
         self.plantsegExecuteBtn.setEnabled(False)
@@ -195,14 +199,14 @@ class CNNWidget(QWidget):
                 model_id=None,
                 suffix="_prediction",
                 patch=patch_size,
-                stride=stride_size,
+                # stride=stride_size,
                 device="cuda" if use_cuda else "cpu",
             )
 
         # Callback when the worker is done
         def on_done(predicted_images):
             self.progressLabel.setText("Prediction complete!")
-            self.viewer.add_image(predicted_images[0].get_data())
+            self.viewer.add_image(predicted_images[0].get_data(), name=f"{selected_image} {selected_model} mask")
             self.plantsegExecuteBtn.setEnabled(True)
             # load_images_to_viewer(self.viewer, predicted_images)
 
@@ -229,7 +233,11 @@ class CNNWidget(QWidget):
             self.cellposeProgressLabel.setText("No image selected!")
             return
 
-        input_path = Path(files_to_use[0])
+        # Extract the path of the selected image
+        selected_layer = self.viewer.layers[selected_image]
+        selected_image_path = selected_layer.metadata.get("path", "")
+
+        input_path = Path(selected_image_path)
         self.cellposeProgressLabel.setText(f"Starting CellPose prediction with model: {selected_model}...")
         self.cellposeExecuteBtn.setEnabled(False)
 
@@ -243,7 +251,7 @@ class CNNWidget(QWidget):
         # Callback when the worker is done
         def on_done(masks):
             self.cellposeProgressLabel.setText("Prediction complete!")
-            self.viewer.add_image(masks)
+            self.viewer.add_image(masks, name=f"{selected_image} {selected_model} mask")
             self.cellposeExecuteBtn.setEnabled(True)
             # load_images_to_viewer(self.viewer, masks)
 

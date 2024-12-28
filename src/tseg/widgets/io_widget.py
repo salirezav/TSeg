@@ -164,7 +164,7 @@ class InputOutputWidget(QWidget):
         # print('here')
         # print(images_to_import)
         loaded = load_image_from_file_as_nparray(images_to_import)
-        load_images_to_viewer(napari_viewer, loaded)
+        load_images_to_viewer(napari_viewer, loaded, images_to_import)  # Pass the paths along with the images
 
         # print(loaded)
 
