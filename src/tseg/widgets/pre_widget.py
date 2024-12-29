@@ -169,6 +169,40 @@ class PreProcessingWidget(QWidget):
 
         self.adap.clicked.connect(lambda: self.do_adaptive_thresh(self.viewer))
 
+        layout.addWidget(QFrame(frameShape=QFrame.HLine))  # Add horizontal divider
+
+        # Contrast Limit Section
+        contrastLimitLabel = QLabel("Contrast Limit")
+        contrastLimitLabel.setAlignment(Qt.AlignLeft)
+        contrastLimitLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
+        layout.addWidget(contrastLimitLabel)
+
+        contrastFormLayout = QFormLayout()
+        layout.addLayout(contrastFormLayout)
+
+        self.contrastButton = QPushButton("Apply Contrast Limit")
+        self.contrastButton.setStyleSheet(
+            """
+            QPushButton{
+            background-color: #198754;
+            border-color: #28a745;
+            }
+            QPushButton::hover
+            {
+            background-color: #218838;
+            border-color: #1e7e34;
+            }
+            QPushButton::pressed
+            {
+            background-color: #1e7e34;
+            border-color: #1c7430;
+            }
+            """
+        )
+        self.contrastButton.clicked.connect(lambda: self.apply_contrast_limit(self.viewer))
+
+        contrastFormLayout.addRow(self.contrastButton)
+
         self.output_dir = Path.home() / ".tseg"
         self.output_dir.mkdir(exist_ok=True)
 
@@ -253,9 +287,10 @@ class PreProcessingWidget(QWidget):
 
     def apply_contrast_limit(self, viewer):
         selected_layers = [layer for layer in self.viewer.layers.selection]
-        min_val, max_val = self.contrastSlider.value()
         for layer in selected_layers:
             img_data = layer.data
+            # Retrieve contrast limits from the layer controls panel
+            min_val, max_val = layer.contrast_limits
             img2 = preprocess_image(img_data, apply_contrast_limit, min_val=min_val, max_val=max_val)
             new_layer_name = f"{layer.name}_contrast"
             output_path = self._save_image(img2, layer.name, "contrast")

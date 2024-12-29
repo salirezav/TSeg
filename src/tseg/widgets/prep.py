@@ -117,5 +117,7 @@ def convert_to_grayscale(image):
         raise ValueError("Unsupported image format for grayscale conversion")
 
 def apply_contrast_limit(image, min_val, max_val):
-    norm_image = cv2.normalize(image, None, min_val, max_val, cv2.NORM_MINMAX)
+    # Set values smaller than min_val to 0 and values larger than max_val to 255
+    image = np.clip(image, min_val, max_val)
+    norm_image = cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX)
     return norm_image.astype(np.uint8)
