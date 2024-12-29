@@ -29,11 +29,11 @@ class InputOutputWidget(QWidget):
 
         layout = QGridLayout(self)
         inputGroupBox = QGroupBox("Input: Select files or a directory", checkable=False)
-        outputGroupBox = QGroupBox("Output: Specify the output folder name")
+        outputGroupBox = QGroupBox("Output: Specify the temporary output folder name")
         layout.addWidget(inputGroupBox, 0, 0, Qt.AlignTop)
         totalVBox = QVBoxLayout()
         outputForm = QFormLayout()
-        self.outputDirName = QLineEdit(os.path.join(os.path.expanduser("~"), "tseg_output"))
+        self.outputDirName = QLineEdit(os.path.join(os.path.expanduser("~"), ".tseg"))
         self.outputDirName.textChanged.connect(lambda: self._output_dir_changed(self.outputDirName.text()))
         outputForm.addRow("Output directory path", self.outputDirName)
         inputGroupBox.setLayout(totalVBox)
@@ -114,7 +114,7 @@ class InputOutputWidget(QWidget):
 
         totalVBox.addLayout(zsliceHbox)
         totalVBox.addWidget(self.loadButton)
-        totalVBox.addWidget(self.save_as_gray_btn)
+        # totalVBox.addWidget(self.save_as_gray_btn)
         # layout.addWidget(self.nextBtn)
 
     def save_as_grayscale(self, napari_viewer):

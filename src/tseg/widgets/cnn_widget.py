@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QFormLayout, QHBoxLayout, QGroupBox, QComboBox, QLabel, QCheckBox, QPushButton, QSpinBox, QDoubleSpinBox, QSizePolicy, QSpacerItem, QFrame, QRadioButton, QButtonGroup
-from PyQt5.QtCore import Qt
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QFormLayout, QHBoxLayout, QGroupBox, QComboBox, QLabel, QCheckBox, QPushButton, QSpinBox, QDoubleSpinBox, QSizePolicy, QSpacerItem, QFrame, QRadioButton, QButtonGroup
+from qtpy.QtCore import Qt
 from pathlib import Path
 from napari.qt.threading import create_worker
 from plantseg.tasks.io_tasks import import_image_task
