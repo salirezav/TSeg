@@ -1,6 +1,6 @@
 import tifffile
-from .load_files import *
-from .prep import *
+from tseg.widgets.load_files import *
+from tseg.widgets.prep import *
 from magicgui import magic_factory
 from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
 from qtpy.QtWidgets import *
@@ -8,7 +8,7 @@ from qtpy.QtCore import *
 from enum import Enum
 import os
 
-from ..config import shared_config  # Import shared_config
+from tseg.config import shared_config  # Import shared_config
 
 
 class InputOutputWidget(QWidget):
