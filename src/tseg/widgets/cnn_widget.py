@@ -5,8 +5,8 @@ from napari.qt.threading import create_worker
 from plantseg.tasks.io_tasks import import_image_task
 from plantseg.tasks.prediction_tasks import unet_prediction_task
 from plantseg.core.zoo import ModelZoo
-from .load_files import load_images_to_viewer
-from ..config import shared_config
+from tseg.widgets.load_files import load_images_to_viewer
+from tseg.config import shared_config
 from plantseg import PATH_MODEL_ZOO, PATH_MODEL_ZOO_CUSTOM
 import cellpose.models  # Import CellPose models
 from cellpose import io

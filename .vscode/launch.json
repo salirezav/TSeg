@@ -17,7 +17,7 @@
                 "-w",
                 "tseg",
                 "Input/Output",
-                // "Pre-Processing",
+                "Pre-Processing",
                 "CNN Detection",
                 // "Segmentation"
             ],
