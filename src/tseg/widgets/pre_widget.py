@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from qtpy.QtWidgets import *
 from qtpy.QtCore import Qt
+import tifffile
 from tseg.config import shared_config  # Import shared_config
 
 from tseg.widgets.prep import *
@@ -197,15 +198,21 @@ class PreProcessingWidget(QWidget):
         self.viewer.add_image(img2, name="log transform")
 
     def _save_image(self, image, original_name, suffix):
+        # Ensure the image is properly formatted for saving
+        if len(image.shape) == 3 and image.shape[0] not in [1, 3, 4]:
+            image = np.moveaxis(image, 0, -1)  # Move channels to the last dimension
         output_path = self.output_dir / f"{original_name}_{suffix}.tif"
-        cv2.imwrite(str(output_path), image)
+        if len(image.shape) >= 3:
+            tifffile.imwrite(str(output_path), image)
+        else:
+            cv2.imwrite(str(output_path), image)
         return output_path
 
     def convert_to_grayscale(self, viewer):
         selected_layers = [layer for layer in self.viewer.layers.selection]
         for layer in selected_layers:
             img_data = layer.data
-            img2 = convert_to_grayscale(img_data)
+            img2 = preprocess_image(img_data, convert_to_grayscale)
             new_layer_name = f"{layer.name}_grayscale"
             output_path = self._save_image(img2, layer.name, "grayscale")
             new_layer = self.viewer.add_image(img2, name=new_layer_name)
@@ -216,7 +223,7 @@ class PreProcessingWidget(QWidget):
         selected_layers = [layer for layer in self.viewer.layers.selection]
         for layer in selected_layers:
             img_data = layer.data
-            img2 = adaptive_thresh(img_data, self.sub_region.value(), self.c_val_slider.value())
+            img2 = preprocess_image(img_data, adaptive_thresh, sub_region=self.sub_region.value(), c_value=self.c_val_slider.value())
             new_layer_name = f"{layer.name}_AdaptiveThresh"
             output_path = self._save_image(img2, layer.name, "AdaptiveThresh")
             new_layer = self.viewer.add_image(img2, name=new_layer_name)
@@ -229,17 +236,29 @@ class PreProcessingWidget(QWidget):
         for layer in selected_layers:
             img_data = layer.data
             if norm_type == "Min-Max":
-                img2 = min_max_normalization(img_data)
+                img2 = preprocess_image(img_data, min_max_normalization)
             elif norm_type == "Scale to -1,+1":
-                img2 = scale_to_minus1_plus1(img_data)
+                img2 = preprocess_image(img_data, scale_to_minus1_plus1)
             elif norm_type == "Z-Score":
-                img2 = z_score_normalization(img_data)
+                img2 = preprocess_image(img_data, z_score_normalization)
             elif norm_type == "Hist Eq":
-                img2 = histogram_equalization(img_data)
+                img2 = preprocess_image(img_data, histogram_equalization)
             elif norm_type == "Gamma Correction":
-                img2 = gamma_correction(img_data, self.gammaSpinBox.value())
+                img2 = preprocess_image(img_data, gamma_correction, gamma=self.gammaSpinBox.value())
             new_layer_name = f"{layer.name}_normalized"
             output_path = self._save_image(img2, layer.name, "normalized")
+            new_layer = self.viewer.add_image(img2, name=new_layer_name)
+            new_layer.metadata["path"] = str(output_path)
+        self.viewer.layers.selection.active = selected_layers[0] if selected_layers else None
+
+    def apply_contrast_limit(self, viewer):
+        selected_layers = [layer for layer in self.viewer.layers.selection]
+        min_val, max_val = self.contrastSlider.value()
+        for layer in selected_layers:
+            img_data = layer.data
+            img2 = preprocess_image(img_data, apply_contrast_limit, min_val=min_val, max_val=max_val)
+            new_layer_name = f"{layer.name}_contrast"
+            output_path = self._save_image(img2, layer.name, "contrast")
             new_layer = self.viewer.add_image(img2, name=new_layer_name)
             new_layer.metadata["path"] = str(output_path)
         self.viewer.layers.selection.active = selected_layers[0] if selected_layers else None

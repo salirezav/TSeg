@@ -1,6 +1,60 @@
 import cv2
 import numpy as np
 
+def detect_data_format(image):
+    shape = image.shape
+    if len(shape) == 2:
+        return "2D"
+    elif len(shape) == 3:
+        if shape[0] in [1, 3, 4]:
+            return "2D with channels"
+        else:
+            return "3D"
+    elif len(shape) == 4:
+        if shape[1] in [1, 3, 4]:
+            return "3D with channels"
+        else:
+            return "4D"
+    elif len(shape) == 5:
+        return "4D with channels"
+    else:
+        raise ValueError("Unsupported image format")
+
+def preprocess_image(image, operation, **kwargs):
+    data_format = detect_data_format(image)
+    
+    if data_format == "2D":
+        return operation(image, **kwargs)
+    elif data_format == "2D with channels":
+        channels = [operation(image[c], **kwargs) for c in range(image.shape[0])]
+        return np.stack(channels, axis=0)
+    elif data_format == "3D":
+        slices = [operation(image[z], **kwargs) for z in range(image.shape[0])]
+        return np.stack(slices, axis=0)
+    elif data_format == "3D with channels":
+        channels = []
+        for c in range(image.shape[0]):
+            slices = [operation(image[c, z], **kwargs) for z in range(image.shape[1])]
+            channels.append(np.stack(slices, axis=0))
+        return np.stack(channels, axis=0)
+    elif data_format == "4D":
+        timepoints = []
+        for t in range(image.shape[0]):
+            slices = [operation(image[t, z], **kwargs) for z in range(image.shape[1])]
+            timepoints.append(np.stack(slices, axis=0))
+        return np.stack(timepoints, axis=0)
+    elif data_format == "4D with channels":
+        channels = []
+        for c in range(image.shape[0]):
+            timepoints = []
+            for t in range(image.shape[1]):
+                slices = [operation(image[c, t, z], **kwargs) for z in range(image.shape[2])]
+                timepoints.append(np.stack(slices, axis=0))
+            channels.append(np.stack(timepoints, axis=0))
+        return np.stack(channels, axis=0)
+    else:
+        raise ValueError("Unsupported image format")
+
 def adaptive_thresh(img, sub_region, c_value):
     print("subregion:", sub_region, "c_val", c_value)
     # Convert image to 8-bit single-channel
