@@ -18,7 +18,7 @@ class ImageLayout(Enum):
     CYX = "CYX"
     ZYX = "ZYX"
     CZYX = "CZYX"
-    ZCYX = "ZCYX"
+    # ZCYX = "ZCYX"
 
     @classmethod
     def to_choices(cls) -> list[str]:
@@ -108,13 +108,31 @@ class CNNWidget(QWidget):
 
             # Execute Button
             self.plantsegExecuteBtn = QPushButton("Execute")
+            self.plantsegExecuteBtn.setStyleSheet(
+                """
+                                   QPushButton{
+                                   background-color: #198754;
+                                   border-color: #28a745;
+                                   }
+                                   QPushButton::hover
+                                   {
+                                   background-color: #218838;
+                                   border-color: #1e7e34;
+                                   }
+                                   QPushButton::pressed
+                                   {
+                                   background-color: #1e7e34;
+                                   border-color: #1c7430;
+                                   }
+                                   """
+            )
             self.plantsegExecuteBtn.clicked.connect(self._start_cnn_detection)
 
             # Add Widgets to the Layout
             formLayout.addRow("Image to Use", self.plantsegImageDD)
             formLayout.addRow("CNN Model", self.cnnModelsDD)
             formLayout.addRow("Patch Size (Z,X,Y)", patchSizeLayout)
-            formLayout.addRow("Stride (Z,X,Y)", strideLayout)
+            # formLayout.addRow("Stride (Z,X,Y)", strideLayout)
             formLayout.addRow("Stack Layout", stackLayoutHBox)
             formLayout.addRow("Use CUDA?", self.useCuda)
             formLayout.addRow(self.plantsegExecuteBtn)
@@ -155,6 +173,25 @@ class CNNWidget(QWidget):
 
             # Execute Button
             self.cellposeExecuteBtn = QPushButton("Execute")
+            self.cellposeExecuteBtn.setStyleSheet(
+                """
+                                   QPushButton{
+                                   background-color: #198754;
+                                   border-color: #28a745;
+                                   }
+                                   QPushButton::hover
+                                   {
+                                   background-color: #218838;
+                                   border-color: #1e7e34;
+                                   }
+                                   QPushButton::pressed
+                                   {
+                                   background-color: #1e7e34;
+                                   border-color: #1c7430;
+                                   }
+                                   """
+            )
+
             self.cellposeExecuteBtn.clicked.connect(self._start_cellpose_detection)
 
             # Add Widgets to the Layout
@@ -239,7 +276,7 @@ class CNNWidget(QWidget):
         use_gpu = self.useGpu.isChecked()
         mean_diameter = self.meanDiameter.value()
         selected_image = self.cellposeImageDD.currentText()
-        files_to_use = shared_config.get("selected_files", [])
+        # files_to_use = shared_config.get("selected_files", [])
 
         if selected_image == "-select image-":
             self.cellposeProgressLabel.setText("No image selected!")
