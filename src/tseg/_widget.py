@@ -23,7 +23,7 @@ from .widgets.io_widget import InputOutputWidget
 from .widgets.pre_widget import PreProcessingWidget
 from .widgets.cnn_widget import CNNWidget
 from .widgets.seg_widget import SegWidget
-from .widgets.track_widget import TrackingWidget
+from .widgets.tracking_widget import TrackingWidget
 
 from .config import *
 

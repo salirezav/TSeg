@@ -7,7 +7,7 @@ except ImportError:
     __version__ = "unknown"
 
 from tseg._reader import napari_get_reader
-from tseg._widget import PreProcessingWidget
+from tseg._widget import PreProcessingWidget, TrackingWidget
 from tseg._writer import write_multiple, write_single_image
 # from io import InputOutputWidget
 
@@ -23,5 +23,6 @@ __all__ = (
     "write_multiple",
     "InputOutputWidget",
     "PreProcessingWidget",
-    "SegmentationWidget"
+    # "SegmentationWidget",
+    "TrackingWidget"
 )

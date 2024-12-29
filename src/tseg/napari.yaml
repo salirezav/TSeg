@@ -29,6 +29,11 @@ contributions:
   - id: tseg.SegmentationWidget
     python_name: tseg._widget:SegWidget
     title: Segmentation
+
+  - id: tseg.TrackingWidget
+    python_name: tseg.widgets.tracking_widget:TrackingWidget
+    title: Tracking
+    
   readers:
   - command: tseg.get_reader
     accepts_directories: false
@@ -49,6 +54,8 @@ contributions:
     display_name: CNN Detection
   - command: tseg.SegmentationWidget
     display_name: Segmentation
+  - command: tseg.TrackingWidget
+    display_name: Tracking
   themes:
   - id: monokai
     label: Monokai
