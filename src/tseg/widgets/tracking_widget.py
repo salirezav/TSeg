@@ -1,6 +1,6 @@
 from qtpy.QtWidgets import *
 from qtpy.QtCore import Qt
-from tseg.config import shared_config  # Import shared_config
+from tseg.config import shared_config, TsegStyles  # Import shared_config
 import numpy as np  # Import numpy as np
 from scipy.ndimage import center_of_mass  # Import center_of_mass
 from tqdm import tqdm  # Import tqdm
@@ -16,31 +16,26 @@ class TrackingWidget(QWidget):
         self.viewer = napari_viewer
         layout = QVBoxLayout(self)
 
+        def _populate_image_dropdown(dropdown):
+            dropdown.clear()
+            dropdown.addItem("-select image-")
+            image_names = [layer.name for layer in self.viewer.layers if layer._type_string == "image"]
+            dropdown.addItems(image_names)
+
         # Connected Component Section
         ccLabel = QLabel("Connected Component")
         ccLabel.setAlignment(Qt.AlignLeft)
         ccLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
         layout.addWidget(ccLabel)
 
+        ccImageLabel = QLabel("Original Data")
+        layout.addWidget(ccImageLabel)
+        self.ccImageDD = QComboBox(self)
+        _populate_image_dropdown(self.ccImageDD)
+        layout.addWidget(self.ccImageDD)
+
         self.ccButton = QPushButton("Calculate")
-        self.ccButton.setStyleSheet(
-            """
-            QPushButton{
-            background-color: #198754;
-            border-color: #28a745;
-            }
-            QPushButton::hover
-            {
-            background-color: #218838;
-            border-color: #1e7e34;
-            }
-            QPushButton::pressed
-            {
-            background-color: #1e7e34;
-            border-color: #1c7430;
-            }
-            """
-        )
+        self.ccButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.ccButton.clicked.connect(self.calculate_connected_component)
         layout.addWidget(self.ccButton)
 
@@ -50,30 +45,25 @@ class TrackingWidget(QWidget):
         noiseRemovalLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
         layout.addWidget(noiseRemovalLabel)
 
+        nrImageLabel = QLabel("Original Data")
+        layout.addWidget(nrImageLabel)
+        self.nrImageDD = QComboBox(self)
+        _populate_image_dropdown(self.nrImageDD)
+        layout.addWidget(self.nrImageDD)
+
+        nrLabeledLabel = QLabel("Labeled Data")
+        layout.addWidget(nrLabeledLabel)
+        self.nrLabeledDD = QComboBox(self)
+        _populate_image_dropdown(self.nrLabeledDD)
+        layout.addWidget(self.nrLabeledDD)
+
         self.volThresholdSpinBox = QSpinBox()
         self.volThresholdSpinBox.setRange(1, 100)
         self.volThresholdSpinBox.setValue(2)
         layout.addWidget(self.volThresholdSpinBox)
 
         self.noiseRemovalButton = QPushButton("Remove Noise")
-        self.noiseRemovalButton.setStyleSheet(
-            """
-            QPushButton{
-            background-color: #198754;
-            border-color: #28a745;
-            }
-            QPushButton::hover
-            {
-            background-color: #218838;
-            border-color: #1e7e34;
-            }
-            QPushButton::pressed
-            {
-            background-color: #1e7e34;
-            border-color: #1c7430;
-            }
-            """
-        )
+        self.noiseRemovalButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.noiseRemovalButton.clicked.connect(self.remove_noise)
         layout.addWidget(self.noiseRemovalButton)
 
@@ -83,70 +73,115 @@ class TrackingWidget(QWidget):
         centerDetectionLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
         layout.addWidget(centerDetectionLabel)
 
+        cdImageLabel = QLabel("Original Data")
+        layout.addWidget(cdImageLabel)
+        self.cdImageDD = QComboBox(self)
+        _populate_image_dropdown(self.cdImageDD)
+        layout.addWidget(self.cdImageDD)
+
+        cdLabeledLabel = QLabel("Labeled Data")
+        layout.addWidget(cdLabeledLabel)
+        self.cdLabeledDD = QComboBox(self)
+        _populate_image_dropdown(self.cdLabeledDD)
+        layout.addWidget(self.cdLabeledDD)
+
         self.centerDetectionButton = QPushButton("Detect Centers")
-        self.centerDetectionButton.setStyleSheet(
-            """
-            QPushButton{
-            background-color: #198754;
-            border-color: #28a745;
-            }
-            QPushButton::hover
-            {
-            background-color: #218838;
-            border-color: #1e7e34;
-            }
-            QPushButton::pressed
-            {
-            background-color: #1e7e34;
-            border-color: #1c7430;
-            }
-            """
-        )
+        self.centerDetectionButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.centerDetectionButton.clicked.connect(self.detect_centers)
         layout.addWidget(self.centerDetectionButton)
 
+        # Track Section
+        trackLabel = QLabel("Track")
+        trackLabel.setAlignment(Qt.AlignLeft)
+        trackLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
+        layout.addWidget(trackLabel)
+
+        trackCentersLabel = QLabel("Centers Data")
+        layout.addWidget(trackCentersLabel)
+        self.trackCentersDD = QComboBox(self)
+        _populate_image_dropdown(self.trackCentersDD)
+        layout.addWidget(self.trackCentersDD)
+
+        self.trackButton = QPushButton("Track")
+        self.trackButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.trackButton.clicked.connect(self.track)
+        layout.addWidget(self.trackButton)
+
+        # Connect layer events to update dropdowns
+        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.ccImageDD))
+        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.ccImageDD))
+        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.ccImageDD))
+        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.nrImageDD))
+        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.nrImageDD))
+        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.nrImageDD))
+        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.nrLabeledDD))
+        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.nrLabeledDD))
+        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.nrLabeledDD))
+        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.cdImageDD))
+        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.cdImageDD))
+        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.cdImageDD))
+        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.cdLabeledDD))
+        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.cdLabeledDD))
+        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.cdLabeledDD))
+        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.trackCentersDD))
+        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.trackCentersDD))
+        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.trackCentersDD))
+
     def calculate_connected_component(self):
-        selected_layer = self.viewer.layers.selection.active
-        if selected_layer is not None:
-            img_data = selected_layer.data
-            labeled, ncomponents = ccl_3d(img_data)
-            self.viewer.add_image(labeled.astype(np.uint8), name=f"{selected_layer.name}_labeled")
-            print(f"Number of components: {ncomponents}")
+        selected_image = self.ccImageDD.currentText()
+        if selected_image == "-select image-":
+            print("No image selected!")
+            return
+
+        selected_layer = self.viewer.layers[selected_image]
+        img_data = selected_layer.data
+        labeled, ncomponents = ccl_3d(img_data)
+        self.viewer.add_image(labeled.astype(np.uint8), name=f"{selected_layer.name}_labeled")
+        print(f"Number of components: {ncomponents}")
 
     def remove_noise(self):
-        selected_layer = self.viewer.layers.selection.active
-        if selected_layer is not None:
-            img_data = selected_layer.data
-            labeled, _ = ccl_3d(img_data)
-            vol_threshold = self.volThresholdSpinBox.value()
-            thr_idxs = noise_removal(img_data, labeled, vol_threshold)
-            # print(f"Threshold indices: {thr_idxs}")
+        selected_image = self.nrImageDD.currentText()
+        selected_labeled = self.nrLabeledDD.currentText()
+        if selected_image == "-select image-" or selected_labeled == "-select image-":
+            print("No image or labeled data selected!")
+            return
+
+        img_data = self.viewer.layers[selected_image].data
+        labeled = self.viewer.layers[selected_labeled].data
+        vol_threshold = self.volThresholdSpinBox.value()
+        thr_idxs = noise_removal(img_data, labeled, vol_threshold)
+        self.viewer.layers[selected_labeled].metadata["thr_idxs"] = thr_idxs
 
     def detect_centers(self):
-        selected_layer = self.viewer.layers.selection.active
-        if selected_layer is not None:
-            img_data = selected_layer.data
-            labeled, _ = ccl_3d(img_data)
-            vol_threshold = self.volThresholdSpinBox.value()
-            thr_idxs = noise_removal(img_data, labeled, vol_threshold)
-            all_centers_noisefree = center_detection(img_data, labeled, thr_idxs)
-            # print(f"Centers: {all_centers_noisefree}")
+        selected_image = self.cdImageDD.currentText()
+        selected_labeled = self.cdLabeledDD.currentText()
+        if selected_image == "-select image-" or selected_labeled == "-select image-":
+            print("No image or labeled data selected!")
+            return
 
-            # Create an array of the same shape as the input for visualization
-            centers_array = np.zeros_like(img_data, dtype=np.uint8)
-            for t, centers in enumerate(all_centers_noisefree):
-                for center in centers:
-                    z, x, y = map(int, center)
-                    centers_array[t, z, x, y] = 1
+        img_data = self.viewer.layers[selected_image].data
+        labeled = self.viewer.layers[selected_labeled].data
+        thr_idxs = self.viewer.layers[selected_labeled].metadata.get("thr_idxs", [])
+        all_centers_noisefree = center_detection(img_data, labeled, thr_idxs)
 
-            self.viewer.add_image(centers_array, name=f"{selected_layer.name}_centers")
+        centers_array = np.zeros_like(img_data, dtype=np.uint8)
+        for t, centers in enumerate(all_centers_noisefree):
+            for center in centers:
+                z, x, y = map(int, center)
+                centers_array[t, z, x, y] = 1
 
-            # Perform tracking
-            xx, yy, zz = tracker(all_centers_noisefree)
-            # print(f"Tracking results: xx={xx}, yy={yy}, zz={zz}")
+        self.viewer.add_image(centers_array, name=f"{selected_image}_centers")
 
-            # Visualize tracking results
-            self.visualize_tracking(xx, yy, zz)
+    def track(self):
+        selected_centers = self.trackCentersDD.currentText()
+        if selected_centers == "-select image-":
+            print("No centers data selected!")
+            return
+
+        centers_layer = self.viewer.layers[selected_centers]
+        centers_data = centers_layer.data
+        xx, yy, zz = tracker(centers_data)
+        self.visualize_tracking(xx, yy, zz)
 
     def visualize_tracking(self, xx, yy, zz):
         points = []
@@ -156,6 +191,7 @@ class TrackingWidget(QWidget):
 
         points_layer = Points(points, name="Tracked Points", size=1, face_color="red", edge_color="white")
         self.viewer.add_layer(points_layer)
+
 
 def ccl_3d(all_image_arr):
     """
@@ -176,6 +212,7 @@ def ccl_3d(all_image_arr):
         all_labeled[frames], all_ncomponents[frames] = label(all_image_arr[frames], structure)
 
     return all_labeled, all_ncomponents
+
 
 def noise_removal(all_img_arr, all_labeled, vol_threshold=1):
     """
@@ -206,6 +243,7 @@ def noise_removal(all_img_arr, all_labeled, vol_threshold=1):
 
     return thr_idxs
 
+
 def center_detection(all_img_arr, all_labeled, thr_idxs):
     all_img_arr = np.asarray(all_img_arr)
 
@@ -214,6 +252,7 @@ def center_detection(all_img_arr, all_labeled, thr_idxs):
         all_centers_noisefree.append(center_of_mass(all_img_arr[frames], labels=all_labeled[frames], index=thr_idxs[frames]))
 
     return all_centers_noisefree
+
 
 def tracker(all_centers):
     all_cen = all_centers
