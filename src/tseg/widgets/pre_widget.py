@@ -3,7 +3,7 @@ from pathlib import Path
 from qtpy.QtWidgets import *
 from qtpy.QtCore import Qt
 import tifffile
-from tseg.config import shared_config  # Import shared_config
+from tseg.config import shared_config, TsegStyles  # Import shared_config
 
 from tseg.widgets.prep import *
 
@@ -28,24 +28,7 @@ class PreProcessingWidget(QWidget):
         layout.addLayout(grayscaleFormLayout)
 
         self.grayscaleButton = QPushButton("To Grayscale")
-        self.grayscaleButton.setStyleSheet(
-            """
-            QPushButton{
-            background-color: #198754;
-            border-color: #28a745;
-            }
-            QPushButton::hover
-            {
-            background-color: #218838;
-            border-color: #1e7e34;
-            }
-            QPushButton::pressed
-            {
-            background-color: #1e7e34;
-            border-color: #1c7430;
-            }
-            """
-        )
+        self.grayscaleButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.grayscaleButton.clicked.connect(lambda: self.convert_to_grayscale(self.viewer))
 
         grayscaleFormLayout.addRow(grayscaleLabel, self.grayscaleButton)
@@ -92,24 +75,7 @@ class PreProcessingWidget(QWidget):
         normLayout.addLayout(gammaLayout)
 
         self.normButton = QPushButton("Normalize")
-        self.normButton.setStyleSheet(
-            """
-            QPushButton{
-            background-color: #198754;
-            border-color: #28a745;
-            }
-            QPushButton::hover
-            {
-            background-color: #218838;
-            border-color: #1e7e34;
-            }
-            QPushButton::pressed
-            {
-            background-color: #1e7e34;
-            border-color: #1c7430;
-            }
-            """
-        )
+        self.normButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.normButton.clicked.connect(lambda: self.do_normalization(self.viewer))
 
         normFormLayout.addRow("Normalization", normLayout)
@@ -127,24 +93,7 @@ class PreProcessingWidget(QWidget):
         layout.addLayout(threshFormLayout)
 
         self.adap = QPushButton("Adaptive Thresholding")
-        self.adap.setStyleSheet(
-            """
-            QPushButton{
-            background-color: #198754;
-            border-color: #28a745;
-            }
-            QPushButton::hover
-            {
-            background-color: #218838;
-            border-color: #1e7e34;
-            }
-            QPushButton::pressed
-            {
-            background-color: #1e7e34;
-            border-color: #1c7430;
-            }
-            """
-        )
+        self.adap.setStyleSheet(TsegStyles.BTN_GREEN)
         self.sub_region = QSlider(Qt.Horizontal)
         self.sub_region.setMinimum(3)
         self.sub_region.setMaximum(100)
@@ -181,24 +130,7 @@ class PreProcessingWidget(QWidget):
         layout.addLayout(contrastFormLayout)
 
         self.contrastButton = QPushButton("Apply Contrast Limit")
-        self.contrastButton.setStyleSheet(
-            """
-            QPushButton{
-            background-color: #198754;
-            border-color: #28a745;
-            }
-            QPushButton::hover
-            {
-            background-color: #218838;
-            border-color: #1e7e34;
-            }
-            QPushButton::pressed
-            {
-            background-color: #1e7e34;
-            border-color: #1c7430;
-            }
-            """
-        )
+        self.contrastButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.contrastButton.clicked.connect(lambda: self.apply_contrast_limit(self.viewer))
 
         contrastFormLayout.addRow(self.contrastButton)
