@@ -18,8 +18,8 @@
                 "tseg",
                 "Input/Output",
                 "Pre-Processing",
-                "CNN Detection",
-                // "Segmentation"
+                // "CNN Detection",
+                "Tracking"
             ],
             "justMyCode": false
         }

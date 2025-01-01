@@ -9,6 +9,7 @@ except ImportError:
 from tseg._reader import napari_get_reader
 from tseg._widget import PreProcessingWidget, TrackingWidget
 from tseg._writer import write_multiple, write_single_image
+
 # from io import InputOutputWidget
 
 # Ensure the temporary folder exists and is empty
@@ -24,5 +25,5 @@ __all__ = (
     "InputOutputWidget",
     "PreProcessingWidget",
     # "SegmentationWidget",
-    "TrackingWidget"
+    "TrackingWidget",
 )
