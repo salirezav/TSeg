@@ -6,7 +6,7 @@ from plantseg.tasks.io_tasks import import_image_task
 from plantseg.tasks.prediction_tasks import unet_prediction_task
 from plantseg.core.zoo import ModelZoo
 from tseg.widgets.load_files import load_images_to_viewer
-from tseg.config import shared_config
+from tseg.config import shared_config, TsegStyles
 from plantseg import PATH_MODEL_ZOO, PATH_MODEL_ZOO_CUSTOM
 import cellpose.models  # Import CellPose models
 from cellpose import io
@@ -108,24 +108,7 @@ class CNNWidget(QWidget):
 
             # Execute Button
             self.plantsegExecuteBtn = QPushButton("Execute")
-            self.plantsegExecuteBtn.setStyleSheet(
-                """
-                                   QPushButton{
-                                   background-color: #198754;
-                                   border-color: #28a745;
-                                   }
-                                   QPushButton::hover
-                                   {
-                                   background-color: #218838;
-                                   border-color: #1e7e34;
-                                   }
-                                   QPushButton::pressed
-                                   {
-                                   background-color: #1e7e34;
-                                   border-color: #1c7430;
-                                   }
-                                   """
-            )
+            self.plantsegExecuteBtn.setStyleSheet(TsegStyles.BTN_GREEN)
             self.plantsegExecuteBtn.clicked.connect(self._start_cnn_detection)
 
             # Add Widgets to the Layout
@@ -173,24 +156,7 @@ class CNNWidget(QWidget):
 
             # Execute Button
             self.cellposeExecuteBtn = QPushButton("Execute")
-            self.cellposeExecuteBtn.setStyleSheet(
-                """
-                                   QPushButton{
-                                   background-color: #198754;
-                                   border-color: #28a745;
-                                   }
-                                   QPushButton::hover
-                                   {
-                                   background-color: #218838;
-                                   border-color: #1e7e34;
-                                   }
-                                   QPushButton::pressed
-                                   {
-                                   background-color: #1e7e34;
-                                   border-color: #1c7430;
-                                   }
-                                   """
-            )
+            self.cellposeExecuteBtn.setStyleSheet(TsegStyles.BTN_GREEN)
 
             self.cellposeExecuteBtn.clicked.connect(self._start_cellpose_detection)
 
