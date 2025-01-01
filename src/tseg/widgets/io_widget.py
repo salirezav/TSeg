@@ -52,46 +52,12 @@ class InputOutputWidget(QWidget):
         # self.zsliceLbl = QLabel("Number of Z-slices:")
         # self.numZslices = QLineEdit()
         self.loadButton = QPushButton("Load Files to the viewer")
-        self.loadButton.setStyleSheet(
-            """
-                                   QPushButton{
-                                   background-color: #198754;
-                                   border-color: #28a745;
-                                   }
-                                   QPushButton::hover
-                                   {
-                                   background-color: #218838;
-                                   border-color: #1e7e34;
-                                   }
-                                   QPushButton::pressed
-                                   {
-                                   background-color: #1e7e34;
-                                   border-color: #1c7430;
-                                   }
-                                   """
-        )
+        self.loadButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.save_as_gray_btn = QPushButton("Save all as grayscale...")
         self.save_as_gray_btn.clicked.connect(lambda: self.save_as_grayscale(napari_viewer))
 
         self.nextBtn = QPushButton("Next")
-        self.nextBtn.setStyleSheet(
-            """
-                                   QPushButton{
-                                   background-color: #198754;
-                                   border-color: #28a745;
-                                   }
-                                   QPushButton::hover
-                                   {
-                                   background-color: #218838;
-                                   border-color: #1e7e34;
-                                   }
-                                   QPushButton::pressed
-                                   {
-                                   background-color: #1e7e34;
-                                   border-color: #1c7430;
-                                   }
-                                   """
-        )
+        self.nextBtn.setStyleSheet(TsegStyles.BTN_GREEN)
 
         self.nextBtn.clicked.connect(self._io_next)
         self.fileStack = QWidget()
@@ -179,24 +145,7 @@ class InputOutputWidget(QWidget):
         layout = QVBoxLayout()
         self.listOfFiles = QListWidget()
         self.browseFiles = QPushButton("Browse Files")
-        self.browseFiles.setStyleSheet(
-            """
-                                   QPushButton{
-                                   background-color: #198754;
-                                   border-color: #28a745;
-                                   }
-                                   QPushButton::hover
-                                   {
-                                   background-color: #218838;
-                                   border-color: #1e7e34;
-                                   }
-                                   QPushButton::pressed
-                                   {
-                                   background-color: #1e7e34;
-                                   border-color: #1c7430;
-                                   }
-                                   """
-        )
+        self.browseFiles.setStyleSheet(TsegStyles.BTN_GREEN)
         self.browseFiles.clicked.connect(lambda: self._file_on_click(self.listOfFiles))
         layout.addWidget(self.listOfFiles)
         layout.addWidget(self.browseFiles)
