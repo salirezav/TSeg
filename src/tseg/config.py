@@ -8,17 +8,19 @@ shared_config["output_dir"] = output_dir
 class TsegStyles:
     BTN_GREEN = """
     QPushButton{
-    background-color: #198754;
-    border-color: #28a745;
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    font-size: 16px;
     }
     QPushButton::hover
     {
-    background-color: #218838;
-    border-color: #1e7e34;
+    background-color: #0056b3;
+    border-color: #0056b3;
     }
     QPushButton::pressed
     {
-    background-color: #1e7e34;
-    border-color: #1c7430;
+    background-color: #004085;
+    border-color: #004085;
     }
     """
