@@ -2,11 +2,8 @@ from qtpy.QtWidgets import *
 from qtpy.QtCore import Qt
 from tseg.config import shared_config, TsegStyles  # Import shared_config
 import numpy as np  # Import numpy as np
-from scipy.ndimage import center_of_mass  # Import center_of_mass
-from tqdm import tqdm  # Import tqdm
-from scipy.spatial import distance
-from scipy.optimize import linear_sum_assignment
 from napari.layers import Points
+from tseg.core.tracking import ccl_3d, noise_removal, center_detection, tracker, preprocessing_for_clustering, computing_affinity, clustering, visualize_clusters  # Import functions from tracking.py
 
 
 class TrackingWidget(QWidget):
@@ -23,89 +20,132 @@ class TrackingWidget(QWidget):
             dropdown.addItems(image_names)
 
         # Connected Component Section
-        ccLabel = QLabel("Connected Component")
+        ccFormLayout = QFormLayout()
+        ccLabel = QLabel("Connected Component Labeling")
         ccLabel.setAlignment(Qt.AlignLeft)
         ccLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
         layout.addWidget(ccLabel)
 
-        ccImageLabel = QLabel("Original Data")
-        layout.addWidget(ccImageLabel)
         self.ccImageDD = QComboBox(self)
         _populate_image_dropdown(self.ccImageDD)
-        layout.addWidget(self.ccImageDD)
+        ccFormLayout.addRow("Original Data", self.ccImageDD)
 
         self.ccButton = QPushButton("Calculate")
         self.ccButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.ccButton.clicked.connect(self.calculate_connected_component)
-        layout.addWidget(self.ccButton)
+        ccFormLayout.addRow(self.ccButton)
+        layout.addLayout(ccFormLayout)
+
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        line = QHLine()
+        line.setStyleSheet("color: white; background-color: white; height: 2px;")
+        layout.addWidget(line)  # Add horizontal line
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Noise Removal Section
+        nrFormLayout = QFormLayout()
         noiseRemovalLabel = QLabel("Noise Removal")
         noiseRemovalLabel.setAlignment(Qt.AlignLeft)
         noiseRemovalLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
         layout.addWidget(noiseRemovalLabel)
 
-        nrImageLabel = QLabel("Original Data")
-        layout.addWidget(nrImageLabel)
         self.nrImageDD = QComboBox(self)
         _populate_image_dropdown(self.nrImageDD)
-        layout.addWidget(self.nrImageDD)
+        nrFormLayout.addRow("Original Data", self.nrImageDD)
 
-        nrLabeledLabel = QLabel("Labeled Data")
-        layout.addWidget(nrLabeledLabel)
         self.nrLabeledDD = QComboBox(self)
         _populate_image_dropdown(self.nrLabeledDD)
-        layout.addWidget(self.nrLabeledDD)
+        nrFormLayout.addRow("Labeled Data", self.nrLabeledDD)
 
         self.volThresholdSpinBox = QSpinBox()
         self.volThresholdSpinBox.setRange(1, 100)
         self.volThresholdSpinBox.setValue(2)
-        layout.addWidget(self.volThresholdSpinBox)
+        nrFormLayout.addRow("Volume Threshold", self.volThresholdSpinBox)
 
         self.noiseRemovalButton = QPushButton("Remove Noise")
         self.noiseRemovalButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.noiseRemovalButton.clicked.connect(self.remove_noise)
-        layout.addWidget(self.noiseRemovalButton)
+        nrFormLayout.addRow(self.noiseRemovalButton)
+        layout.addLayout(nrFormLayout)
+
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        line = QHLine()
+        line.setStyleSheet("color: white; background-color: white; height: 2px;")
+        layout.addWidget(line)  # Add horizontal line
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Center Detection Section
+        cdFormLayout = QFormLayout()
         centerDetectionLabel = QLabel("Center Detection")
         centerDetectionLabel.setAlignment(Qt.AlignLeft)
         centerDetectionLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
         layout.addWidget(centerDetectionLabel)
 
-        cdImageLabel = QLabel("Original Data")
-        layout.addWidget(cdImageLabel)
         self.cdImageDD = QComboBox(self)
         _populate_image_dropdown(self.cdImageDD)
-        layout.addWidget(self.cdImageDD)
+        cdFormLayout.addRow("Original Data", self.cdImageDD)
 
-        cdLabeledLabel = QLabel("Labeled Data")
-        layout.addWidget(cdLabeledLabel)
         self.cdLabeledDD = QComboBox(self)
         _populate_image_dropdown(self.cdLabeledDD)
-        layout.addWidget(self.cdLabeledDD)
+        cdFormLayout.addRow("Labeled Data", self.cdLabeledDD)
 
         self.centerDetectionButton = QPushButton("Detect Centers")
         self.centerDetectionButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.centerDetectionButton.clicked.connect(self.detect_centers)
-        layout.addWidget(self.centerDetectionButton)
+        cdFormLayout.addRow(self.centerDetectionButton)
+        layout.addLayout(cdFormLayout)
+
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        line = QHLine()
+        line.setStyleSheet("color: white; background-color: white; height: 2px;")
+        layout.addWidget(line)  # Add horizontal line
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Track Section
-        trackLabel = QLabel("Track")
+        trackFormLayout = QFormLayout()
+        trackLabel = QLabel("Tracking")
         trackLabel.setAlignment(Qt.AlignLeft)
         trackLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
         layout.addWidget(trackLabel)
 
-        trackCentersLabel = QLabel("Centers Data")
-        layout.addWidget(trackCentersLabel)
         self.trackCentersDD = QComboBox(self)
         _populate_image_dropdown(self.trackCentersDD)
-        layout.addWidget(self.trackCentersDD)
+        trackFormLayout.addRow("Centers Data", self.trackCentersDD)
 
         self.trackButton = QPushButton("Track")
         self.trackButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.trackButton.clicked.connect(self.track)
-        layout.addWidget(self.trackButton)
+        trackFormLayout.addRow(self.trackButton)
+        layout.addLayout(trackFormLayout)
+
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        line = QHLine()
+        line.setStyleSheet("color: white; background-color: white; height: 2px;")
+        layout.addWidget(line)  # Add horizontal line
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+        # Clustering Section
+        clusteringFormLayout = QFormLayout()
+        clusteringLabel = QLabel("Clustering Trajectories")
+        clusteringLabel.setAlignment(Qt.AlignLeft)
+        clusteringLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
+        layout.addWidget(clusteringLabel)
+
+        self.arOrderSpinBox = QSpinBox()
+        self.arOrderSpinBox.setRange(1, 10)
+        self.arOrderSpinBox.setValue(5)
+        clusteringFormLayout.addRow("Number of Autoregressive Orders", self.arOrderSpinBox)
+
+        self.clusterNumSpinBox = QSpinBox()
+        self.clusterNumSpinBox.setRange(1, 10)
+        self.clusterNumSpinBox.setValue(3)
+        clusteringFormLayout.addRow("Number of Clusters", self.clusterNumSpinBox)
+
+        self.clusterButton = QPushButton("Cluster Trajectories")
+        self.clusterButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.clusterButton.clicked.connect(self.cluster_trajectories)
+        clusteringFormLayout.addRow(self.clusterButton)
+        layout.addLayout(clusteringFormLayout)
 
         # Connect layer events to update dropdowns
         self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.ccImageDD))
@@ -170,7 +210,8 @@ class TrackingWidget(QWidget):
                 z, x, y = map(int, center)
                 centers_array[t, z, x, y] = 1
 
-        self.viewer.add_image(centers_array, name=f"{selected_image}_centers")
+        centers_layer = self.viewer.add_image(centers_array, name=f"{selected_image}_centers")
+        centers_layer.metadata["all_centers_noisefree"] = all_centers_noisefree
 
     def track(self):
         selected_centers = self.trackCentersDD.currentText()
@@ -179,8 +220,12 @@ class TrackingWidget(QWidget):
             return
 
         centers_layer = self.viewer.layers[selected_centers]
-        centers_data = centers_layer.data
-        xx, yy, zz = tracker(centers_data)
+        all_centers_noisefree = centers_layer.metadata.get("all_centers_noisefree", [])
+        if not all_centers_noisefree:
+            print("No center data found in metadata!")
+            return
+
+        xx, yy, zz = tracker(all_centers_noisefree)
         self.visualize_tracking(xx, yy, zz)
 
     def visualize_tracking(self, xx, yy, zz):
@@ -192,109 +237,53 @@ class TrackingWidget(QWidget):
         points_layer = Points(points, name="Tracked Points", size=1, face_color="red", edge_color="white")
         self.viewer.add_layer(points_layer)
 
+    def cluster_trajectories(self):
+        ar_order = self.arOrderSpinBox.value()
+        cluster_num = self.clusterNumSpinBox.value()
 
-def ccl_3d(all_image_arr):
-    """
-    First we extract the labels of the components for all the cells
-    across all the frames. Thus the number of components and their labels
-    are discovered here:
-    """
-    import numpy as np
-    from scipy.ndimage import label
-    from tqdm import tqdm
+        selected_centers = self.trackCentersDD.currentText()
+        if selected_centers == "-select image-":
+            print("No centers data selected!")
+            return
 
-    all_image_arr = np.asarray(all_image_arr)
-    structure = np.ones((3, 3, 3), dtype=int)
-    all_labeled = np.zeros(shape=all_image_arr.shape)
-    all_ncomponents = np.zeros(all_image_arr.shape[0])
+        centers_layer = self.viewer.layers[selected_centers]
+        all_centers_noisefree = centers_layer.metadata.get("all_centers_noisefree", [])
+        if not all_centers_noisefree:
+            print("No center data found in metadata!")
+            return
 
-    for frames in tqdm(range(all_image_arr.shape[0]), desc="3D Connected Component Calculation"):
-        all_labeled[frames], all_ncomponents[frames] = label(all_image_arr[frames], structure)
+        xx, yy, zz = tracker(all_centers_noisefree)
 
-    return all_labeled, all_ncomponents
+        # Pre Processing for clustering
+        tracked_frames = len(all_centers_noisefree) - 1
+        object_numbers = len(xx)
+        xx, yy, zz = preprocessing_for_clustering(xx, yy, zz, tracked_frames, object_numbers)
 
+        # Setting Auto regressive parameters and other initializations
+        number_of_points = np.shape(xx)[0]
+        columns = ar_order * 2 * 2
+        flatten_AR_mat = np.zeros(shape=(number_of_points, columns))
+        print((number_of_points, columns), flatten_AR_mat.shape)
 
-def noise_removal(all_img_arr, all_labeled, vol_threshold=1):
-    """
-    For Removing the noise,, i've considered only the components with
-    the volume greater tha 1 pixel. Thus first I computed the volume of
-    each component and then extracted the centers only for the components
-    with the volume greater than 1 pixels:
-    """
-    all_img_arr = np.asarray(all_img_arr)
+        # Creating a pool of preprocessed trajectories
+        traj_pool = np.stack([xx, yy, zz])
+        print(traj_pool.shape, len(xx))
 
-    unique = list()
-    counts = list()
-    for frames in range(all_img_arr.shape[0]):
-        unq = np.unique(all_labeled[frames], return_counts=True)
-        unique.append(unq[0])
-        counts.append(unq[1])
+        # Computing the affinity matrix for clustering
+        sim1, sim2, [A1, A2, A3, A4, A5], (X, C) = computing_affinity(traj_pool, tracked_frames, flatten_AR_mat, number_of_points)
 
-    # Here I'm selecting only the center of the components with the volume
-    # less than 1 pixel and put them in thr_idxs list  :
+        # Perform clustering
+        labels = clustering(sim1, cluster_num, "labels.npy", "affinity.npy")
 
-    thr_idxs = [[]]
-    for i in tqdm(range(len(counts)), desc=f"Selecting volumes > {vol_threshold}"):
-        for j in range(1, len(counts[i])):
-            if counts[i][j] > vol_threshold:
-                thr_idxs[i].append(unique[i][j])
-        thr_idxs.append([])
-    thr_idxs = [pick for pick in thr_idxs if len(pick) > 0]
+        # Visualize clusters
+        color_list = ["r", "g", "b", "y", "c", "m", "k"]
+        visualize_clusters(color_list, labels, xx, yy, zz, "clusters.png")
 
-    return thr_idxs
+        print(f"Clustering with AR order: {ar_order} and number of clusters: {cluster_num}")
 
 
-def center_detection(all_img_arr, all_labeled, thr_idxs):
-    all_img_arr = np.asarray(all_img_arr)
-
-    all_centers_noisefree = []
-    for frames in tqdm(range(all_img_arr.shape[0]), desc="Detecting the center of components."):
-        all_centers_noisefree.append(center_of_mass(all_img_arr[frames], labels=all_labeled[frames], index=thr_idxs[frames]))
-
-    return all_centers_noisefree
-
-
-def tracker(all_centers):
-    all_cen = all_centers
-    new_objects = [[(0, x)] for x in all_centers[0]]
-
-    t_limit = 20
-
-    for i in tqdm(range(1, len(all_cen) - 1), desc="Tracking..."):
-        current_frame = all_cen[i]
-        last_known_centers = [obj[-1][1] for obj in new_objects if len(obj) > 0]
-        cost = distance.cdist(last_known_centers, current_frame, "euclidean")
-        obj_ids, new_centers_ind = linear_sum_assignment(cost)
-
-        all_center_inds = set(range(len(current_frame)))
-
-        for obj_id, new_center_ind in zip(obj_ids, new_centers_ind):
-            if (
-                distance.euclidean(
-                    np.array(current_frame[new_center_ind]),
-                    np.array(new_objects[obj_id][-1][1]),
-                )
-                <= t_limit
-            ):
-                all_center_inds.remove(new_center_ind)
-                new_objects[obj_id].append((i, current_frame[new_center_ind]))
-
-        for new_center_ind in all_center_inds:
-            new_objects.append([(i, current_frame[new_center_ind])])
-    xx = [[]]
-    yy = [[]]
-    zz = [[]]
-    for i in range(len(new_objects)):
-        for j in range(len(new_objects[i])):
-            zz[i].append(new_objects[i][j][1][0])
-            xx[i].append(new_objects[i][j][1][1])
-            yy[i].append(new_objects[i][j][1][2])
-        xx.append([])
-        zz.append([])
-        yy.append([])
-
-    zz = [pick for pick in zz if len(pick) > 0]
-    xx = [pick for pick in xx if len(pick) > 0]
-    yy = [pick for pick in yy if len(pick) > 0]
-
-    return (xx, yy, zz)
+class QHLine(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Sunken)
