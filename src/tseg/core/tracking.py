@@ -4,6 +4,7 @@ from tqdm import tqdm
 from scipy.spatial import distance
 from scipy.optimize import linear_sum_assignment
 from matplotlib import pyplot as plt
+import scipy.linalg as sla
 
 
 def ccl_3d(all_image_arr):

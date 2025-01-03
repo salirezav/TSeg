@@ -131,6 +131,10 @@ class TrackingWidget(QWidget):
         clusteringLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
         layout.addWidget(clusteringLabel)
 
+        self.clusterCentersDD = QComboBox(self)
+        _populate_image_dropdown(self.clusterCentersDD)
+        clusteringFormLayout.addRow("Centers Data", self.clusterCentersDD)
+
         self.arOrderSpinBox = QSpinBox()
         self.arOrderSpinBox.setRange(1, 10)
         self.arOrderSpinBox.setValue(5)
@@ -148,24 +152,15 @@ class TrackingWidget(QWidget):
         layout.addLayout(clusteringFormLayout)
 
         # Connect layer events to update dropdowns
-        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.ccImageDD))
-        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.ccImageDD))
-        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.ccImageDD))
-        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.nrImageDD))
-        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.nrImageDD))
-        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.nrImageDD))
-        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.nrLabeledDD))
-        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.nrLabeledDD))
-        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.nrLabeledDD))
-        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.cdImageDD))
-        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.cdImageDD))
-        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.cdImageDD))
-        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.cdLabeledDD))
-        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.cdLabeledDD))
-        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.cdLabeledDD))
-        self.viewer.layers.events.inserted.connect(lambda event: _populate_image_dropdown(self.trackCentersDD))
-        self.viewer.layers.events.removed.connect(lambda event: _populate_image_dropdown(self.trackCentersDD))
-        self.viewer.layers.events.changed.connect(lambda event: _populate_image_dropdown(self.trackCentersDD))
+        dropdowns = [
+            self.ccImageDD, self.nrImageDD, self.nrLabeledDD, self.cdImageDD,
+            self.cdLabeledDD, self.trackCentersDD, self.clusterCentersDD
+        ]
+
+        for dropdown in dropdowns:
+            self.viewer.layers.events.inserted.connect(lambda event, dd=dropdown: _populate_image_dropdown(dd))
+            self.viewer.layers.events.removed.connect(lambda event, dd=dropdown: _populate_image_dropdown(dd))
+            self.viewer.layers.events.changed.connect(lambda event, dd=dropdown: _populate_image_dropdown(dd))
 
     def calculate_connected_component(self):
         selected_image = self.ccImageDD.currentText()
@@ -241,7 +236,7 @@ class TrackingWidget(QWidget):
         ar_order = self.arOrderSpinBox.value()
         cluster_num = self.clusterNumSpinBox.value()
 
-        selected_centers = self.trackCentersDD.currentText()
+        selected_centers = self.clusterCentersDD.currentText()
         if selected_centers == "-select image-":
             print("No centers data selected!")
             return
