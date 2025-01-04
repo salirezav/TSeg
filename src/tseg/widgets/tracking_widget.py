@@ -5,6 +5,7 @@ import numpy as np  # Import numpy as np
 from napari.layers import Points
 import pandas as pd  # Import pandas for DataFrame manipulation
 from tseg.core.tracking import ccl_3d, noise_removal, center_detection, tracker, preprocessing_for_clustering, computing_affinity, clustering, visualize_clusters  # Import functions from tracking.py
+from tseg.widgets import QHLine
 
 
 class TrackingWidget(QWidget):
@@ -153,10 +154,7 @@ class TrackingWidget(QWidget):
         layout.addLayout(clusteringFormLayout)
 
         # Connect layer events to update dropdowns
-        dropdowns = [
-            self.ccImageDD, self.nrImageDD, self.nrLabeledDD, self.cdImageDD,
-            self.cdLabeledDD, self.trackCentersDD, self.clusterCentersDD
-        ]
+        dropdowns = [self.ccImageDD, self.nrImageDD, self.nrLabeledDD, self.cdImageDD, self.cdLabeledDD, self.trackCentersDD, self.clusterCentersDD]
 
         for dropdown in dropdowns:
             self.viewer.layers.events.inserted.connect(lambda event, dd=dropdown: _populate_image_dropdown(dd))
@@ -277,7 +275,7 @@ class TrackingWidget(QWidget):
         print(f"Clustering with AR order: {ar_order} and number of clusters: {cluster_num}")
 
     def visualize_clusters_in_napari(self, xx, yy, zz, labels, cluster_num):
-        colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'white', 'orange', 'purple', 'brown']
+        colors = ["red", "green", "blue", "yellow", "cyan", "magenta", "white", "orange", "purple", "brown"]
         for cluster_id in range(cluster_num):
             cluster_points = []
             for i in range(len(xx)):
@@ -286,10 +284,3 @@ class TrackingWidget(QWidget):
                         cluster_points.append([zz[i][j], xx[i][j], yy[i][j]])
             points_layer = Points(cluster_points, name=f"Cluster {cluster_id + 1}", size=1, face_color=colors[cluster_id % len(colors)], edge_color="white")
             self.viewer.add_layer(points_layer)
-
-
-class QHLine(QFrame):
-    def __init__(self):
-        super().__init__()
-        self.setFrameShape(QFrame.HLine)
-        self.setFrameShadow(QFrame.Sunken)
