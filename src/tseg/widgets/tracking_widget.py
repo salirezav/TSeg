@@ -22,11 +22,12 @@ class TrackingWidget(QWidget):
             dropdown.addItems(image_names)
 
         # Connected Component Section
+        cclGroupBox = QGroupBox()
+        cclGroupBox.setTitle("Connected Component Labeling")
+        cclGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         ccFormLayout = QFormLayout()
-        ccLabel = QLabel("Connected Component Labeling")
-        ccLabel.setAlignment(Qt.AlignLeft)
-        ccLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(ccLabel)
+        cclGroupBox.setLayout(ccFormLayout)
+        layout.addWidget(cclGroupBox)
 
         self.ccImageDD = QComboBox(self)
         _populate_image_dropdown(self.ccImageDD)
@@ -36,20 +37,20 @@ class TrackingWidget(QWidget):
         self.ccButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.ccButton.clicked.connect(self.calculate_connected_component)
         ccFormLayout.addRow(self.ccButton)
-        layout.addLayout(ccFormLayout)
 
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
         line = QHLine()
         line.setStyleSheet("color: white; background-color: white; height: 2px;")
         layout.addWidget(line)  # Add horizontal line
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Noise Removal Section
+        nrGroupBox = QGroupBox()
+        nrGroupBox.setTitle("Noise Removal")
+        nrGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         nrFormLayout = QFormLayout()
-        noiseRemovalLabel = QLabel("Noise Removal")
-        noiseRemovalLabel.setAlignment(Qt.AlignLeft)
-        noiseRemovalLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(noiseRemovalLabel)
+        nrGroupBox.setLayout(nrFormLayout)
+        layout.addWidget(nrGroupBox)
 
         self.nrImageDD = QComboBox(self)
         _populate_image_dropdown(self.nrImageDD)
@@ -68,20 +69,20 @@ class TrackingWidget(QWidget):
         self.noiseRemovalButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.noiseRemovalButton.clicked.connect(self.remove_noise)
         nrFormLayout.addRow(self.noiseRemovalButton)
-        layout.addLayout(nrFormLayout)
 
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
         line = QHLine()
         line.setStyleSheet("color: white; background-color: white; height: 2px;")
         layout.addWidget(line)  # Add horizontal line
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Center Detection Section
+        cdGroupBox = QGroupBox()
+        cdGroupBox.setTitle("Center Detection")
+        cdGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         cdFormLayout = QFormLayout()
-        centerDetectionLabel = QLabel("Center Detection")
-        centerDetectionLabel.setAlignment(Qt.AlignLeft)
-        centerDetectionLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(centerDetectionLabel)
+        cdGroupBox.setLayout(cdFormLayout)
+        layout.addWidget(cdGroupBox)
 
         self.cdImageDD = QComboBox(self)
         _populate_image_dropdown(self.cdImageDD)
@@ -95,20 +96,20 @@ class TrackingWidget(QWidget):
         self.centerDetectionButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.centerDetectionButton.clicked.connect(self.detect_centers)
         cdFormLayout.addRow(self.centerDetectionButton)
-        layout.addLayout(cdFormLayout)
 
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
         line = QHLine()
         line.setStyleSheet("color: white; background-color: white; height: 2px;")
         layout.addWidget(line)  # Add horizontal line
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Track Section
+        trackGroupBox = QGroupBox()
+        trackGroupBox.setTitle("Tracking")
+        trackGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         trackFormLayout = QFormLayout()
-        trackLabel = QLabel("Tracking")
-        trackLabel.setAlignment(Qt.AlignLeft)
-        trackLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(trackLabel)
+        trackGroupBox.setLayout(trackFormLayout)
+        layout.addWidget(trackGroupBox)
 
         self.trackCentersDD = QComboBox(self)
         _populate_image_dropdown(self.trackCentersDD)
@@ -118,20 +119,20 @@ class TrackingWidget(QWidget):
         self.trackButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.trackButton.clicked.connect(self.track)
         trackFormLayout.addRow(self.trackButton)
-        layout.addLayout(trackFormLayout)
 
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
         line = QHLine()
         line.setStyleSheet("color: white; background-color: white; height: 2px;")
         layout.addWidget(line)  # Add horizontal line
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Clustering Section
+        clusteringGroupBox = QGroupBox()
+        clusteringGroupBox.setTitle("Clustering Trajectories")
+        clusteringGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         clusteringFormLayout = QFormLayout()
-        clusteringLabel = QLabel("Clustering Trajectories")
-        clusteringLabel.setAlignment(Qt.AlignLeft)
-        clusteringLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(clusteringLabel)
+        clusteringGroupBox.setLayout(clusteringFormLayout)
+        layout.addWidget(clusteringGroupBox)
 
         self.clusterCentersDD = QComboBox(self)
         _populate_image_dropdown(self.clusterCentersDD)
@@ -151,7 +152,6 @@ class TrackingWidget(QWidget):
         self.clusterButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.clusterButton.clicked.connect(self.cluster_trajectories)
         clusteringFormLayout.addRow(self.clusterButton)
-        layout.addLayout(clusteringFormLayout)
 
         # Connect layer events to update dropdowns
         dropdowns = [self.ccImageDD, self.nrImageDD, self.nrLabeledDD, self.cdImageDD, self.cdLabeledDD, self.trackCentersDD, self.clusterCentersDD]
@@ -264,7 +264,7 @@ class TrackingWidget(QWidget):
         print(traj_pool.shape, len(xx))
 
         # Computing the affinity matrix for clustering
-        sim1, sim2, [A1, A2, A3, A4, A5], (X, C) = computing_affinity(traj_pool, tracked_frames, flatten_AR_mat, number_of_points)
+        sim1, sim2, A_matrices, (X, C) = computing_affinity(traj_pool, tracked_frames, flatten_AR_mat, number_of_points, ar_order)
 
         # Perform clustering
         labels = clustering(sim1, cluster_num, "labels.npy", "affinity.npy")
@@ -282,5 +282,5 @@ class TrackingWidget(QWidget):
                 if labels[i] == cluster_id:
                     for j in range(len(xx[i])):
                         cluster_points.append([zz[i][j], xx[i][j], yy[i][j]])
-            points_layer = Points(cluster_points, name=f"Cluster {cluster_id + 1}", size=1, face_color=colors[cluster_id % len(colors)], edge_color="white")
+            points_layer = Points(cluster_points, name=f"Cluster {cluster_id + 1}", size=2, face_color=colors[cluster_id % len(colors)], edge_color="white")
             self.viewer.add_layer(points_layer)
