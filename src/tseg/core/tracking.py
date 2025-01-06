@@ -314,7 +314,7 @@ def martin(A1, C1, A2, C2):
     return -np.log(w.prod())
 
 
-def computing_affinity(traj_pool, frame_numbers, flatten_AR_mat, number_of_points):
+def computing_affinity(traj_pool, frame_numbers, flatten_AR_mat, number_of_points, ar_order):
     # first We create a trajectory pool with the dimensions of 3x(Num_of_trajectoris)x(Num_of_frames)
     all_traj_mat = traj_pool.copy()
     all_traj_mat = all_traj_mat.reshape(all_traj_mat.shape[0], all_traj_mat.shape[1] * all_traj_mat.shape[2])
@@ -327,13 +327,11 @@ def computing_affinity(traj_pool, frame_numbers, flatten_AR_mat, number_of_point
     print("AR_Matrix, Projection_Matrix dims=", str(X.shape), str(C.shape))
     for index in range(number_of_points):
         traj2 = X[:, frame_numbers * index : (index + 1) * frame_numbers]
-        A1, A2, A3, A4, A5 = train(traj2, 5)
-        flatten_AR_mat[index] = np.concatenate((A1.flatten(), A2.flatten(), A3.flatten(), A4.flatten(), A5.flatten()))
+        A_matrices = train(traj2, ar_order)
+        flatten_AR_mat[index] = np.concatenate([A.flatten() for A in A_matrices])
     print(flatten_AR_mat.shape)
 
     # Now let us create a pairwise Martin Distance:
-
-    # ===========================================================================================================
 
     Mrt_dist_mat = np.zeros(shape=(flatten_AR_mat.shape[0], flatten_AR_mat.shape[0]))
     for i in range(flatten_AR_mat.shape[0]):
@@ -382,7 +380,7 @@ def computing_affinity(traj_pool, frame_numbers, flatten_AR_mat, number_of_point
     print(np.isinf(lap).any())
     plt.imshow(similarity2, cmap="hot")
     plt.colorbar()
-    return similarity1, similarity2, [A1, A2, A3, A4, A5], (X, C)
+    return similarity1, similarity2, A_matrices, (X, C)
 
 
 def clustering(affinity, num_of_clusters, labels_file_name, affinity_file_name):
