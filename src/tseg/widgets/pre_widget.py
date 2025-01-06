@@ -15,34 +15,30 @@ class PreProcessingWidget(QWidget):
         layout = QVBoxLayout(self)
 
         hintLabel = QLabel("Hint: Select the layer(s) you want to process in the layer list and then click the button.")
-
         layout.addWidget(hintLabel)
 
         # Convert to Grayscale Section
-        grayscaleLabel = QLabel("Convert to Grayscale")
-        grayscaleLabel.setAlignment(Qt.AlignLeft)
-        grayscaleLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(grayscaleLabel)
-
+        grayscaleGroupBox = QGroupBox()
+        grayscaleGroupBox.setTitle("Convert to Grayscale")
+        grayscaleGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         grayscaleFormLayout = QFormLayout()
-        layout.addLayout(grayscaleFormLayout)
+        grayscaleGroupBox.setLayout(grayscaleFormLayout)
+        layout.addWidget(grayscaleGroupBox)
 
         self.grayscaleButton = QPushButton("To Grayscale")
         self.grayscaleButton.setStyleSheet(TsegStyles.BTN_GREEN)
         self.grayscaleButton.clicked.connect(lambda: self.convert_to_grayscale(self.viewer))
-
-        grayscaleFormLayout.addRow(grayscaleLabel, self.grayscaleButton)
+        grayscaleFormLayout.addRow(self.grayscaleButton)
 
         layout.addWidget(QFrame(frameShape=QFrame.HLine))  # Add horizontal divider
 
         # Normalization Section
-        normalizationLabel = QLabel("Normalization")
-        normalizationLabel.setAlignment(Qt.AlignLeft)
-        normalizationLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(normalizationLabel)
-
+        normalizationGroupBox = QGroupBox()
+        normalizationGroupBox.setTitle("Normalization")
+        normalizationGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         normFormLayout = QFormLayout()
-        layout.addLayout(normFormLayout)
+        normalizationGroupBox.setLayout(normFormLayout)
+        layout.addWidget(normalizationGroupBox)
 
         self.normGroup = QButtonGroup(self)
         self.minMaxNorm = QRadioButton("Min-Max")
@@ -84,13 +80,12 @@ class PreProcessingWidget(QWidget):
         layout.addWidget(QFrame(frameShape=QFrame.HLine))  # Add horizontal divider
 
         # Adaptive Threshold Section
-        adaptiveThreshLabel = QLabel("Adaptive Threshold")
-        adaptiveThreshLabel.setAlignment(Qt.AlignLeft)
-        adaptiveThreshLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(adaptiveThreshLabel)
-
+        adaptiveThreshGroupBox = QGroupBox()
+        adaptiveThreshGroupBox.setTitle("Adaptive Threshold")
+        adaptiveThreshGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         threshFormLayout = QFormLayout()
-        layout.addLayout(threshFormLayout)
+        adaptiveThreshGroupBox.setLayout(threshFormLayout)
+        layout.addWidget(adaptiveThreshGroupBox)
 
         self.adap = QPushButton("Adaptive Thresholding")
         self.adap.setStyleSheet(TsegStyles.BTN_GREEN)
@@ -121,13 +116,12 @@ class PreProcessingWidget(QWidget):
         layout.addWidget(QFrame(frameShape=QFrame.HLine))  # Add horizontal divider
 
         # Contrast Limit Section
-        contrastLimitLabel = QLabel("Contrast Limit")
-        contrastLimitLabel.setAlignment(Qt.AlignLeft)
-        contrastLimitLabel.setStyleSheet("font-weight: bold; font-size: 18pt;")
-        layout.addWidget(contrastLimitLabel)
-
+        contrastLimitGroupBox = QGroupBox()
+        contrastLimitGroupBox.setTitle("Contrast Limit")
+        contrastLimitGroupBox.setStyleSheet("QGroupBox { font-size: 16pt; padding-top: 20px;}")
         contrastFormLayout = QFormLayout()
-        layout.addLayout(contrastFormLayout)
+        contrastLimitGroupBox.setLayout(contrastFormLayout)
+        layout.addWidget(contrastLimitGroupBox)
 
         self.contrastButton = QPushButton("Apply Contrast Limit")
         self.contrastButton.setStyleSheet(TsegStyles.BTN_GREEN)
