@@ -46,7 +46,7 @@ Quantitative cell research often relies on robust tools for measuring cell prope
 
 # Statement of Need
 
-Biomedical image segmentation is a cornerstone of quantitative cell research, particularly for studying cellular dynamics like motility and morphological changes. Current tools often fall short in addressing the complexities of 3D imaging data, such as overlapping features, computational requirements, and challenges introduced by artifacts like light diffraction and out-of-focus cells. Additionally, Convolutional Neural Network (CNN) models, while powerful, require large annotated datasets, are tailored for specific tasks, and suffer from limited transferability and generalizability due to their dependency on large annotated training data. Developing or fine-tuning CNN models is a complex task requiring deep learning expertise, which further limits their accessibility to many biologists. TSeg addresses these gaps by providing:
+Biomedical image segmentation is a cornerstone of quantitative cell research, particularly for studying cellular dynamics like motility and morphological changes. Current tools often fall short in addressing the complexities of 3D imaging data, such as overlapping features, computational requirements, and challenges introduced by artifacts like light diffraction and out-of-focus cells. Additionally, Convolutional Neural Network (CNN) models, while powerful, require large annotated datasets, are tailored for specific tasks, and suffer from limited transferability and generalizability due to their dependency on large annotated training data. Developing or fine-tuning CNN models is a complex task [@chen2020improving] requiring deep learning expertise, which further limits their accessibility to many biologists. TSeg addresses these gaps by providing:
 
 1. A streamlined interface through the Napari viewer, enabling user-friendly interaction and replacing the need for expertise in coding, model development, or deep learning knowledge.
 2. Compatibility with state-of-the-art segmentation algorithms by utilizing PlantSeg and CellPose’s APIs. This approach leverages their extensive sets of pretrained models, significantly expanding generalizability and support for various segmentation targets.
@@ -54,12 +54,12 @@ Biomedical image segmentation is a cornerstone of quantitative cell research, pa
 
 # Features
 
-TSeg comprises four main modules:
+TSeg comprises three main modules:
 
 1. **Preprocessing:** Includes adaptive thresholding, normalization, and noise removal to enhance image quality.
 2. **Segmentation:** Integrates PlantSeg for tissue-specific 3D segmentation and CellPose for diverse cell types. These tools are implemented in the backend via their APIs, ensuring seamless operation.
-3. **Tracking:** Employs connected component analysis and the Hungarian algorithm for accurate cell tracking across 3D time-lapse images.
-4. **Motility Clustering:** Leverages autoregressive modeling to analyze cell trajectories, enabling these trajectories to be clustered in an unsupervised manner for a deeper understanding of motility.
+3. **Tracking and Motility Clustering** Employs connected component analysis and the Hungarian algorithm for accurate cell tracking across 3D time-lapse images.
+Leverages autoregressive modeling to analyze cell trajectories, enabling these trajectories to be clustered in an unsupervised manner for a deeper understanding of motility.
 
 # Impact
 
