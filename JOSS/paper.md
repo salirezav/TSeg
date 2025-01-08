@@ -51,5 +51,7 @@ TSeg’s user-centric design democratizes access to advanced 3D imaging tools, e
 - Enhance reproducibility in biomedical research by providing standardized workflows.
 
 # Acknowledgements
+We would like to express our gratitude to Mojtaba Fazli, Gary Ward, and Silvia Moreno for their invaluable support and contributions to this work.
+
 
 # References
