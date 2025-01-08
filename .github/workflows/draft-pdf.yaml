@@ -2,7 +2,7 @@ name: Draft PDF
 on: [push]
 
 jobs:
-  paper:
+  joss-paper:
     runs-on: ubuntu-latest
     name: Paper Draft
     steps:
@@ -12,9 +12,9 @@ jobs:
         uses: openjournals/openjournals-draft-action@master
         with:
           journal: joss # Quoting the value
-          paper-path: paper.md # Quoting the value for consistency
+          paper-path: JOSS/paper.md # Quoting the value for consistency
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: paper
-          path: paper.pdf # Quoting the value for consistency
+          path: JOSS/paper.pdf # Quoting the value for consistency
