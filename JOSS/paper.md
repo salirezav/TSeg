@@ -5,7 +5,6 @@ tags:
 - image segmentation
 - multi-dimensional biomedical image
 - 3D cell tracking
-- motility clustering
 authors:
 - name: Seyed Vaezi
     orcid: 0009-0000-2089-8362
