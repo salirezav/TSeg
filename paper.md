@@ -1,43 +1,24 @@
 ---
 title: 'TSeg: An Open-Source Napari Plugin for 3D Cell Instance Segmentation, Tracking, and Motility Clustering'
 tags:
-
 - Python
 - image segmentation
 - multi-dimensional biomedical image
 - 3D cell tracking
 - motility clustering
 authors:
-- name: Seyed Vaezi
-    # orcid: 0009-0000-2089-8362
-    equal-contrib: true
-    affiliation: 1 # (Multiple affiliations must be quoted)
+- name: Seyed Alireza Vaezi
+    orcid: 0009-0000-2089-8362
+    affiliation: 1 
 - name: Shannon Quinn
-    # orcid: 0000-0002-8916-6335
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
+    orcid: 0000-0002-8916-6335
     affiliation: 1
-# - name: Author with no affiliation
-#     corresponding: true # (This is how to denote the corresponding author)
-#     affiliation: 3
-# - given-names: Ludwig
-#     dropping-particle: van
-#     surname: Beethoven
-#     affiliation: 3
 affiliations:
 - name: School of Computing, University of Georgia, United States
    index: 1
    ror: 00hx57361
-# - name: Institution Name, Country
-#    index: 2
-# - name: Independent Researcher, Country
-#    index: 3
 date: 6 January 2025
 bibliography: refs.bib
-
-# Optional fields if submitting to a AAS journal too, see this blog post:
-# https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
-# aas-doi: 10.3847/xxxxx <- update this with the DOI from AAS once you know it.
-# aas-journal: Astrophysical Journal <- The name of the AAS journal.
 ---
 
 # Summary
