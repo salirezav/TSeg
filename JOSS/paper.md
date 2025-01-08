@@ -42,13 +42,13 @@ TSeg comprises three main modules:
 3. **Tracking and Motility Clustering** Employs connected component analysis and the Hungarian algorithm for accurate cell tracking across 3D time-lapse images.
 Leverages autoregressive modeling to analyze cell trajectories, enabling these trajectories to be clustered in an unsupervised manner for a deeper understanding of motility.
 
-# Impact
+<!-- # Impact
 
 TSeg’s user-centric design democratizes access to advanced 3D imaging tools, enabling researchers to:
 
 - Efficiently analyze complex datasets without requiring expertise in deep learning.
 - Extend the plugin’s capabilities to novel applications by integrating additional modules or segmentation tools.
-- Enhance reproducibility in biomedical research by providing standardized workflows.
+- Enhance reproducibility in biomedical research by providing standardized workflows. -->
 
 # Acknowledgements
 We would like to express our gratitude to Mojtaba Fazli, Gary Ward, and Silvia Moreno for their invaluable support and contributions to this work.
