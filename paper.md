@@ -8,7 +8,9 @@ tags:
 - 3D cell tracking
 - motility clustering
 authors:
-- name: Seyed Alireza Vaezi
+- name: 
+    - given-names: Seyed Alireza
+    - surname:  Vaezi
     orcid: 0009-0000-2089-8362
     equal-contrib: true
     affiliation: 1 # (Multiple affiliations must be quoted)
