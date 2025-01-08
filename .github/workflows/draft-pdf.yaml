@@ -1,6 +1,5 @@
 name: Draft PDF
 on: [push]
-
 jobs:
   joss-paper:
     runs-on: ubuntu-latest
