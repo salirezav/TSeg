@@ -8,14 +8,12 @@ tags:
 - 3D cell tracking
 - motility clustering
 authors:
-- name: 
-    - given-names: Seyed Alireza
-    - surname:  Vaezi
-    orcid: 0009-0000-2089-8362
+- name: Seyed Vaezi
+    # orcid: 0009-0000-2089-8362
     equal-contrib: true
     affiliation: 1 # (Multiple affiliations must be quoted)
 - name: Shannon Quinn
-    orcid: 0000-0002-8916-6335
+    # orcid: 0000-0002-8916-6335
     equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 1
 # - name: Author with no affiliation
