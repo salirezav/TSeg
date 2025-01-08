@@ -5,17 +5,18 @@ tags:
 - image segmentation
 - multi-dimensional biomedical image
 - 3D cell tracking
+- motility clustering
 authors:
 - name: Seyed Vaezi
-    orcid: 0009-0000-2089-8362
-    affiliation: 1 
+  orcid: 0009-0000-2089-8362
+  affiliation: 1 
 - name: Shannon Quinn
-    orcid: 0000-0002-8916-6335
-    affiliation: 1
+  orcid: 0000-0002-8916-6335
+  affiliation: 1
 affiliations:
 - name: School of Computing, University of Georgia, United States
-   index: 1
-   ror: 00hx57361
+  index: 1
+  ror: 00hx57361
 date: 6 January 2025
 bibliography: refs.bib
 ---
