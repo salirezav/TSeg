@@ -17,11 +17,11 @@
                 "-w",
                 "tseg",
                 "Input/Output",
-                // "Pre-Processing"
-                // "CNN Detection"
-                "Segmentation"
+                "Pre-Processing",
+                // "CNN Detection",
+                "Tracking"
             ],
-            "justMyCode": true
+            "justMyCode": false
         }
     ]
 }
