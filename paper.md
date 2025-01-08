@@ -8,11 +8,11 @@ tags:
 - 3D cell tracking
 - motility clustering
 authors:
-- name: Seyed Alireza Vaezi
+- name: "Seyed Alireza Vaezi"
     orcid: 0009-0000-2089-8362
     equal-contrib: true
     affiliation: 1 # (Multiple affiliations must be quoted)
-- name: Shannon Quinn
+- name: "Shannon Quinn"
     orcid: 0000-0002-8916-6335
     equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 2
@@ -24,7 +24,7 @@ authors:
 #     surname: Beethoven
 #     affiliation: 3
 affiliations:
-- name: School of Computing, University of Georgia, United States
+- name: "School of Computing, University of Georgia, United States"
    index: 1
    ror: 00hx57361
 # - name: Institution Name, Country
