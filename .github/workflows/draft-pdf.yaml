@@ -7,14 +7,14 @@ jobs:
     name: Paper Draft
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
       - name: Build draft PDF
         uses: openjournals/openjournals-draft-action@master
         with:
           journal: joss # Quoting the value
           paper-path: JOSS/paper.md # Quoting the value for consistency
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
           name: paper
           path: JOSS/paper.pdf # Quoting the value for consistency
