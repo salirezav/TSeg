@@ -1,5 +1,6 @@
 # tseg
 
+[![status](https://joss.theoj.org/papers/7960f2888304c4d5a3b8d2d89caee1a5/status.svg)](https://joss.theoj.org/papers/7960f2888304c4d5a3b8d2d89caee1a5)
 [![License MIT](https://img.shields.io/pypi/l/tseg.svg?color=green)](https://github.com/salirezav/tseg/raw/main/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/tseg.svg?color=green)](https://pypi.org/project/tseg)
 [![Python Version](https://img.shields.io/pypi/pyversions/tseg.svg?color=green)](https://python.org)
