@@ -52,12 +52,12 @@ class InputOutputWidget(QWidget):
         # self.zsliceLbl = QLabel("Number of Z-slices:")
         # self.numZslices = QLineEdit()
         self.loadButton = QPushButton("Load Files to the viewer")
-        self.loadButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.loadButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.save_as_gray_btn = QPushButton("Save all as grayscale...")
         self.save_as_gray_btn.clicked.connect(lambda: self.save_as_grayscale(napari_viewer))
 
         self.nextBtn = QPushButton("Next")
-        self.nextBtn.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.nextBtn.setStyleSheet(TsegStyles.BTN_PRIMARY)
 
         self.nextBtn.clicked.connect(self._io_next)
         self.fileStack = QWidget()
@@ -145,7 +145,7 @@ class InputOutputWidget(QWidget):
         layout = QVBoxLayout()
         self.listOfFiles = QListWidget()
         self.browseFiles = QPushButton("Browse Files")
-        self.browseFiles.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.browseFiles.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.browseFiles.clicked.connect(lambda: self._file_on_click(self.listOfFiles))
         layout.addWidget(self.listOfFiles)
         layout.addWidget(self.browseFiles)

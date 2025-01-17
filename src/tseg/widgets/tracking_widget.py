@@ -34,7 +34,7 @@ class TrackingWidget(QWidget):
         ccFormLayout.addRow("Original Data", self.ccImageDD)
 
         self.ccButton = QPushButton("Calculate")
-        self.ccButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.ccButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.ccButton.clicked.connect(self.calculate_connected_component)
         ccFormLayout.addRow(self.ccButton)
 
@@ -66,7 +66,7 @@ class TrackingWidget(QWidget):
         nrFormLayout.addRow("Volume Threshold", self.volThresholdSpinBox)
 
         self.noiseRemovalButton = QPushButton("Remove Noise")
-        self.noiseRemovalButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.noiseRemovalButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.noiseRemovalButton.clicked.connect(self.remove_noise)
         nrFormLayout.addRow(self.noiseRemovalButton)
 
@@ -93,7 +93,7 @@ class TrackingWidget(QWidget):
         cdFormLayout.addRow("Labeled Data", self.cdLabeledDD)
 
         self.centerDetectionButton = QPushButton("Detect Centers")
-        self.centerDetectionButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.centerDetectionButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.centerDetectionButton.clicked.connect(self.detect_centers)
         cdFormLayout.addRow(self.centerDetectionButton)
 
@@ -116,7 +116,7 @@ class TrackingWidget(QWidget):
         trackFormLayout.addRow("Centers Data", self.trackCentersDD)
 
         self.trackButton = QPushButton("Track")
-        self.trackButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.trackButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.trackButton.clicked.connect(self.track)
         trackFormLayout.addRow(self.trackButton)
 
@@ -149,7 +149,7 @@ class TrackingWidget(QWidget):
         clusteringFormLayout.addRow("Number of Clusters", self.clusterNumSpinBox)
 
         self.clusterButton = QPushButton("Cluster Trajectories")
-        self.clusterButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.clusterButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.clusterButton.clicked.connect(self.cluster_trajectories)
         clusteringFormLayout.addRow(self.clusterButton)
 

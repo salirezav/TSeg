@@ -26,7 +26,7 @@ class PreProcessingWidget(QWidget):
         layout.addWidget(grayscaleGroupBox)
 
         self.grayscaleButton = QPushButton("To Grayscale")
-        self.grayscaleButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.grayscaleButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.grayscaleButton.clicked.connect(lambda: self.convert_to_grayscale(self.viewer))
         grayscaleFormLayout.addRow(self.grayscaleButton)
 
@@ -71,7 +71,7 @@ class PreProcessingWidget(QWidget):
         normLayout.addLayout(gammaLayout)
 
         self.normButton = QPushButton("Normalize")
-        self.normButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.normButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.normButton.clicked.connect(lambda: self.do_normalization(self.viewer))
 
         normFormLayout.addRow("Normalization", normLayout)
@@ -88,7 +88,7 @@ class PreProcessingWidget(QWidget):
         layout.addWidget(adaptiveThreshGroupBox)
 
         self.adap = QPushButton("Adaptive Thresholding")
-        self.adap.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.adap.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.sub_region = QSlider(Qt.Horizontal)
         self.sub_region.setMinimum(3)
         self.sub_region.setMaximum(100)
@@ -124,7 +124,7 @@ class PreProcessingWidget(QWidget):
         layout.addWidget(contrastLimitGroupBox)
 
         self.contrastButton = QPushButton("Apply Contrast Limit")
-        self.contrastButton.setStyleSheet(TsegStyles.BTN_GREEN)
+        self.contrastButton.setStyleSheet(TsegStyles.BTN_PRIMARY)
         self.contrastButton.clicked.connect(lambda: self.apply_contrast_limit(self.viewer))
 
         contrastFormLayout.addRow(self.contrastButton)

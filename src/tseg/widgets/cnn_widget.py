@@ -108,7 +108,7 @@ class CNNWidget(QWidget):
 
             # Execute Button
             self.plantsegExecuteBtn = QPushButton("Execute")
-            self.plantsegExecuteBtn.setStyleSheet(TsegStyles.BTN_GREEN)
+            self.plantsegExecuteBtn.setStyleSheet(TsegStyles.BTN_PRIMARY)
             self.plantsegExecuteBtn.clicked.connect(self._start_cnn_detection)
 
             # Add Widgets to the Layout
@@ -156,7 +156,7 @@ class CNNWidget(QWidget):
 
             # Execute Button
             self.cellposeExecuteBtn = QPushButton("Execute")
-            self.cellposeExecuteBtn.setStyleSheet(TsegStyles.BTN_GREEN)
+            self.cellposeExecuteBtn.setStyleSheet(TsegStyles.BTN_PRIMARY)
 
             self.cellposeExecuteBtn.clicked.connect(self._start_cellpose_detection)
 
