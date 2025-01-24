@@ -259,8 +259,8 @@ class CNNWidget(QWidget):
         # Worker task function
         def worker_task():
             image = io.imread(input_path)
-            model = cellpose.models.Cellpose(gpu=use_gpu, model_type=selected_model)
-            masks, flows, styles, diams = model.eval(image, diameter=mean_diameter, channels=[0, 0], flow_threshold=0.4, cellprob_threshold=0)
+            model = cellpose.models.CellposeModel(gpu=use_gpu, model_type=selected_model)
+            masks, flows, styles = model.eval(image, diameter=None, channels=[0, 0], flow_threshold=0.4, cellprob_threshold=0)
             return masks
 
         # Callback when the worker is done
