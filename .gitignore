@@ -86,3 +86,5 @@ affinity.npy
 clusters.png
 labels.npy
 datasets/*
+Naming and file content conventions.pdf
+tree.txt
