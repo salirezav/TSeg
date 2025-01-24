@@ -85,3 +85,4 @@ venv/
 affinity.npy
 clusters.png
 labels.npy
+datasets/*
