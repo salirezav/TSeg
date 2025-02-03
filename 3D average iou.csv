@@ -1,0 +1,7 @@
+dataset_name,cyto3,nuclei,cyto2_cp3,tissuenet_cp3,livecell_cp3,yeast_PhC_cp3,yeast_BF_cp3,bact_phase_cp3,bact_fluor_cp3,deepbacs_cp3,cyto2,cyto,CPx,neurips_grayscale_cyto2,CP,TN1,TN2,TN3,LC1,LC2,LC3,LC4,generic_confocal_3D_unet,generic_light_sheet_3D_unet,confocal_3D_unet_ovules_ds1x,confocal_3D_unet_ovules_ds2x,confocal_3D_unet_ovules_ds3x,lightsheet_3D_unet_root_ds1x,lightsheet_3D_unet_root_ds2x,lightsheet_3D_unet_root_ds3x,lightsheet_3D_unet_root_nuclei_ds1x,confocal_3D_unet_sa_meristem_cells,confocal_3D_unet_mouse_embryo_nuclei,PlantSeg_3Dnuc_platinum
+Fluo-C3DH-A549,0.96,0.96,0.97,0.96,0.96,0.92,0.95,0.96,0.96,0.96,0.96,0.96,0.98,0.97,0.98,0.96,0.96,0.96,0.86,0.96,0.96,0.96,0.96,0.96,0.96,0.96,0.96,0.96,0.96,0.96,0.96,0.96,0.96,0.96
+Fluo-C3DH-A549-SIM,0.97,0.97,0.97,0.97,0.95,0.93,0.97,0.97,0.97,0.97,0.98,0.97,0.99,0.98,0.99,0.97,0.97,0.99,0.97,0.97,0.13,0.97,0.97,0.97,0.97,0.97,0.97,0.97,0.97,0.97,0.97,0.97,0.97,0.97
+Fluo-C3DH-H157,0.93,0.93,0.93,0.93,0.93,0.88,0.92,0.93,0.93,0.93,0.93,0.93,0.93,0.93,0.93,0.93,0.93,0.93,0.92,0.93,0.93,0.93,0.88,0.88,0.88,0.88,0.88,0.88,0.88,0.88,0.88,0.88,0.88,0.88
+Fluo-N3DH-CE,0.8,0.8,0.8,0.8,0.8,0.68,0.8,0.79,0.8,0.8,0.8,0.8,0.8,0.73,0.79,0.8,0.8,0.8,0.8,0.8,0.79,0.8,0.78,0.78,0.78,0.78,,,,,,,,
+Fluo-N3DH-CHO,0.83,0.84,0.79,0.84,0.84,0.84,0.83,0.83,0.83,0.84,0.84,0.82,0.83,0.82,0.82,0.84,0.84,0.84,0.82,0.84,0.82,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84
+Fluo-N3DH-SIM+,0.92,0.93,0.93,0.93,0.93,0.86,0.88,0.93,0.93,0.93,0.94,0.93,0.93,0.92,0.93,0.93,0.93,0.93,0.92,0.93,0.3,0.93,,,,,,,,,,,,
